@@ -18,9 +18,14 @@ public class DriveTrain extends TeleopModule {
     MotorController leftMotors, rightMotors;
     private RelativeEncoder leftEncoder, rightEncoder;
 
+    VictorSP jeremyMotor;
+    VictorSP jeremyMotor2;
+
     public DriveTrain() {
         rightMotors = new MotorControllerGroup(Container.getInstance().frontRightMotor, Container.getInstance().backRightMotor);
         leftMotors = new MotorControllerGroup(Container.getInstance().frontLeftMotor, Container.getInstance().backLeftMotor);
+        jeremyMotor = Container.getInstance().jeremyMotor;
+        jeremyMotor2 = Container.getInstance().jeremyMotor2;
     }
 
     @Override
@@ -33,10 +38,14 @@ public class DriveTrain extends TeleopModule {
         
         double joystickInputSpeed = ControlSystems.getInstance().leftstick.getY();
         
-        jeremyMotor.set(joystickInputSpeed);
+        if (jeremyMotor != null) {
+            jeremyMotor.set(joystickInputSpeed);
+        }
         
-        jeremyMotor2.set(-joystickInputSpeed)
-
+        if (jeremyMotor2 != null) {
+            jeremyMotor2.set(-joystickInputSpeed);
+        }
+        
         //double leftInputSpeed = ControlSystems.getInstance().dGamepadLeftY();
         //double rightInputSpeed = ControlSystems.getInstance().dGamepadRightY();
         //rightMotors.set(rightInputSpeed);

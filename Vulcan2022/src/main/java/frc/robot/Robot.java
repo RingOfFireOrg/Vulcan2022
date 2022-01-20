@@ -28,9 +28,7 @@ public class Robot extends TimedRobot {
     driveTrain = new DriveTrain();
     autonomous = new Autonomous();
 
-    driveTrain.teleopInit()
-    
-    m_leftStick = new Joystick(0);
+    driveTrain.teleopInit();
   }
 
   @Override
