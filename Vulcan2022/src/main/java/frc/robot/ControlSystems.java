@@ -18,56 +18,48 @@ public class ControlSystems {
     public ControlSystems() {
         rightstick = new Joystick(0);
         leftstick = new Joystick(1);
-        driverController = new XboxController(3);
         manipulatorController = new XboxController(2);
+        driverController = new XboxController(3);
     }
-
     public double rightSpeed() {
-        if (Math.abs(rightstick.getY()) < .1) return 0;
+        if (Math.abs(rightstick.getY()) < .1) {
+            return 0;
+        }
         return rightstick.getY();
     } 
-
     public double leftSpeed() {
-        if (Math.abs(leftstick.getY()) < .1) return 0;
+        if (Math.abs(leftstick.getY()) < .1) {
+            return 0;
+        }
         return leftstick.getY();
     }
-
     public double manipulatorStickSpeed() {
         return manipulatorStick.getY();
     }
-
     public double manipulatorStickTwist() {
         return manipulatorStick.getTwist();
     }
-
     public Boolean manipulatorStickTrigger() {
         return manipulatorStick.getTrigger();
     }
-
     public double mGamepadLeftY() {
         return manipulatorController.getRawAxis(RobotMap.MANIPULATOR_LEFT_JOYSTICK_Y);
     }
-
     public double mGamepadRightY() {
         return manipulatorController.getRawAxis(RobotMap.MANIPULATOR_RIGHT_JOYSTICK_Y);
     }
-
     public double dGamepadLeftY() {
         return driverController.getRawAxis(RobotMap.MANIPULATOR_LEFT_JOYSTICK_Y);
     }
-
     public double dGamepadRightY() {
         return driverController.getRawAxis(RobotMap.MANIPULATOR_RIGHT_JOYSTICK_Y);
     }
-
     public double gamepadLeftTrigger() {
-        return manipulatorController.getRawAxis(RobotMap.MANIPULATOR_LEFT_TRIGGER);
+        return manipulatorController.getRawAxis(RobotMap.MANIPULATOR_LEFT_TRIGGER); //nice
     }
-
     public double gamepadRightTrigger() {
         return manipulatorController.getRawAxis(RobotMap.MANIPULATOR_RIGHT_TRIGGER);
     }
-
     public static ControlSystems getInstance() {
         if (thetrueControlSystem != null) {
             return thetrueControlSystem;

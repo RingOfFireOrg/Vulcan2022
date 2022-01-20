@@ -19,6 +19,9 @@ public class Autonomous {
     private int autonomousStep = -1;
     private double FEET = 8.50; // To go one FEET, the robot encoder has to read ~8.50 inches of the wheel
     
+    public void autonomousInit() {
+        
+    }
     /*
     switch (autonomousStep) {
         case 0: {
