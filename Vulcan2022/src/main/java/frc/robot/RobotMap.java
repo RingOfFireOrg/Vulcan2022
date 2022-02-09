@@ -21,7 +21,7 @@ public class RobotMap {
 	static final public int DT_RIGHT_BACK = CANBUS1;
 	static final public int DT_RIGHT_FORWARD = CANBUS2;
     static final public int DT_LEFT_BACK = CANBUS3;
-	static final public int DT_LEFT_FORWARD = CANBUS4;
+	static final public int DT_LEFT_FORWARD = CANBUS1;
 
     //Ports of Robot
 	//Joysticks

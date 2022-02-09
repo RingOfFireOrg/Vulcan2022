@@ -13,15 +13,34 @@ import edu.wpi.first.wpilibj.SerialPort;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
+enum autoStep {
+    init,
+    shoot,
+    driveForward,
+    turn;
+};
+
 public class Autonomous {
     private MotorControllerGroup leftMotors, rightMotors; 
     private RelativeEncoder leftEncoder, rightEncoder;
-    private int autonomousStep = -1;
+    //private int autonomousStep = -1;
     private double FEET = 8.50; // To go one FEET, the robot encoder has to read ~8.50 inches of the wheel
     private double leftDiff = 0, rightDiff = leftDiff;
     private double lastLeftDiff = 0, lastRightDiff = lastLeftDiff;
+    autoStep autonomousStep = autoStep.init;
+
+    public void autonomousInit() {
+        //
+    }
     /**
      * STEPS to 4 ball auto + 1 human player
+     * 
+     * 1. Intake on
+     * 2. Forward 42"
+     * 3. Turn 147.75 degrees
+     * 
+     * 
+     * 
      * 
      * 1. Shoot preloaded ball
      * 2. Turn to ball with vision (approx 180 - x)
@@ -58,7 +77,7 @@ public class Autonomous {
         lastRightDiff = rightDiff;
     }
 
-    public void move(String direction, double leftSpeed, double rightSpeed) {
+    public void move(double leftSpeed, double rightSpeed) {
         double offset = 0.05;
 
         calculateEncoderDiff();
@@ -75,13 +94,28 @@ public class Autonomous {
         rightMotors.set(rightSpeed);
     }
 
-    /*
-    switch (autonomousStep) {
-        case 0: {
-            //Setup
-            
-            autonomousStep++;
-            break;
-        }
-    }*/
+    public float getabsoluteDirection() {
+        return 0;//Container.getInstance().ahrs.getYaw();
+    }
+
+    public void autonomousPeriodic() {
+        switch (autonomousStep) {
+            case init: {
+                
+                break;
+            }
+            case shoot: {
+
+                break;
+            }
+            case driveForward: {
+
+                break;
+            }
+            case turn: {
+
+                break;
+            }
+        };
+    }
 }

@@ -22,6 +22,7 @@ public class Robot extends TimedRobot {
 
   protected DriveTrain driveTrain;
   protected Autonomous autonomous;
+  int counter = 0;
   
   @Override
   public void robotInit() {
@@ -41,9 +42,15 @@ public class Robot extends TimedRobot {
     autonomous.autonomousInit();
   }
 
+  
   @Override
   public void teleopPeriodic() {
     driveTrain.teleopControl();
-    //System.out.println();
+    counter++;
+    double speed = ControlSystems.getInstance().rightstick.getY();
+    if (speed < 0.05 && speed > 0.05) {
+      speed = 0;
+    }
+    Container.getInstance().frontLeftMotor.set(speed);
   }
 }

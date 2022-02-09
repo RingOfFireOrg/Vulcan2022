@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import javax.swing.TransferHandler.TransferSupport;
 
 import com.revrobotics.RelativeEncoder;
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -14,30 +15,33 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 
+
 public class Container {
-    public static PID drive;
     public RelativeEncoder leftEncoder, rightEncoder;
 	public CANSparkMax frontLeftMotor;
-    public CANSparkMax frontRightMotor;
-    public CANSparkMax backRightMotor;
-    public CANSparkMax backLeftMotor;
-    public final VictorSP jeremyMotor;
-    public final VictorSP jeremyMotor2;
+    // public CANSparkMax frontRightMotor;
+    // public CANSparkMax backRightMotor;
+    // public CANSparkMax backLeftMotor;
+
+    // public AHRS ahrs;
 
     private static Container theTrueContainer;
 
     private Container() {
-        frontLeftMotor = new CANSparkMax(RobotMap.DT_LEFT_FORWARD, MotorType.kBrushless);
+        frontLeftMotor = new CANSparkMax(1, MotorType.kBrushless);
         frontLeftMotor.setInverted(true);
-        frontRightMotor = new CANSparkMax(RobotMap.DT_RIGHT_FORWARD, MotorType.kBrushless);
-        frontRightMotor.setInverted(false);
-        backRightMotor = new CANSparkMax(RobotMap.DT_RIGHT_BACK, MotorType.kBrushless);
-        backRightMotor.setInverted(false);
-        backLeftMotor = new CANSparkMax(RobotMap.DT_LEFT_BACK, MotorType.kBrushless);
-        backLeftMotor.setInverted(true);
 
-        jeremyMotor = new VictorSP(2);
-        jeremyMotor2 = new VictorSP(3);
+        // frontRightMotor = new CANSparkMax(RobotMap.DT_RIGHT_FORWARD, MotorType.kBrushless);
+        // frontRightMotor.setInverted(false);
+        
+        // backRightMotor = new CANSparkMax(RobotMap.DT_RIGHT_BACK, MotorType.kBrushless);
+        // backRightMotor.setInverted(false);
+        
+        /*backLeftMotor = new CANSparkMax(RobotMap.DT_LEFT_BACK, MotorType.kBrushless);
+        backLeftMotor.setInverted(true);*/
+
+        //ahrs = new AHRS(SerialPort.Port.kUSB);
+        // ahrs.reset();
     }
 
     public double getLeftInches() {
