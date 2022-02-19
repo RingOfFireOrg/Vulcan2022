@@ -19,8 +19,8 @@ public class DriveTrain extends TeleopModule {
     private RelativeEncoder rightEncoder; // leftEncoder;
     
     public DriveTrain() {
-        //rightMotors = new MotorControllerGroup(Container.getInstance().frontRightMotor, Container.getInstance().backRightMotor);
-        //leftMotors = new MotorControllerGroup(Container.getInstance().frontLeftMotor, Container.getInstance().backLeftMotor);
+        rightMotors = new MotorControllerGroup(Container.getInstance().frontRightMotor, Container.getInstance().backRightMotor);
+        leftMotors = new MotorControllerGroup(Container.getInstance().frontLeftMotor, Container.getInstance().backLeftMotor);
     }   
 
     @Override

@@ -46,13 +46,13 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     driveTrain.teleopControl();
-    counter++;
+    
     /*double speed = ControlSystems.getInstance().rightstick.getY();
     if (speed < 0.05 && speed > 0.05) {
       speed = 0;
     }*/
-    Container.getInstance().climberLeft.set(ControlSystems.getInstance().leftstick.getY());
-    Container.getInstance().climberRight.set(ControlSystems.getInstance().rightstick.getY());
+    //Container.getInstance().climberLeft.set(ControlSystems.getInstance().leftstick.getY());
+    //Container.getInstance().climberRight.set(ControlSystems.getInstance().rightstick.getY());
     //Container.getInstance().frontLeftMotor.set(speed);
   }
 }
