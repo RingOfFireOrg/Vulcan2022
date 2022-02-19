@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -47,10 +48,13 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     driveTrain.teleopControl();
     counter++;
-    double speed = ControlSystems.getInstance().rightstick.getY();
-    if (speed < 0.05 && speed > 0.05) {
+    /*double speed = ControlSystems.getInstance().rightstick.getY();
+    if (speed < 0.05 && speed > 0.e05) {
       speed = 0;
-    }
-    Container.getInstance().frontLeftMotor.set(speed);
+    }*/
+   // Container.getInstance().frontLeftMotor.set(speed);
+    Container.getInstance().shooterFalcon.set(ControlMode.PercentOutput, ControlSystems.getInstance().rightstick.getY()*1);
+    Container.getInstance().frontLeftMotor.set(ControlSystems.getInstance().leftstick.getY()*.2);
+  Container.getInstance().transfer2.set(ControlSystems.getInstance().leftstick.getX());
   }
 }

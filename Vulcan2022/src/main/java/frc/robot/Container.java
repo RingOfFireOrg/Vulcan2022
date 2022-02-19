@@ -8,6 +8,7 @@ import com.revrobotics.RelativeEncoder;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -18,10 +19,12 @@ import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 
 public class Container {
     public RelativeEncoder leftEncoder, rightEncoder;
-	public CANSparkMax frontLeftMotor;
+    public CANSparkMax frontLeftMotor;
+    public TalonFX shooterFalcon;
     // public CANSparkMax frontRightMotor;
     // public CANSparkMax backRightMotor;
     // public CANSparkMax backLeftMotor;
+    public VictorSP transfer2;
 
     // public AHRS ahrs;
 
@@ -30,6 +33,8 @@ public class Container {
     private Container() {
         frontLeftMotor = new CANSparkMax(1, MotorType.kBrushless);
         frontLeftMotor.setInverted(true);
+        shooterFalcon = new TalonFX(1);
+        transfer2 = new VictorSP(2);
 
         // frontRightMotor = new CANSparkMax(RobotMap.DT_RIGHT_FORWARD, MotorType.kBrushless);
         // frontRightMotor.setInverted(false);
