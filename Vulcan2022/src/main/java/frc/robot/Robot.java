@@ -53,7 +53,7 @@ public class Robot extends TimedRobot {
       speed = 0;
     }*/
    // Container.getInstance().frontLeftMotor.set(speed);
-    Container.getInstance().shooterFalcon.set(ControlMode.PercentOutput, ControlSystems.getInstance().rightstick.getY()*1);
+    Container.getInstance().shooterFalcon.set(ControlMode.PercentOutput, ControlSystems.getInstance().rightstick.getY()*.85);
     Container.getInstance().frontLeftMotor.set(ControlSystems.getInstance().leftstick.getY()*.2);
   Container.getInstance().transfer2.set(ControlSystems.getInstance().leftstick.getX());
   }
