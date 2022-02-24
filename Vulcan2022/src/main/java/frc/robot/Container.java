@@ -19,22 +19,22 @@ import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 public class Container {
     public RelativeEncoder leftEncoder, rightEncoder;
 
-    //public VictorSP climberRight;
-    //public VictorSP climberLeft;
-    public CANSparkMax frontRightMotor;
+    public VictorSP climberRight;
+    public VictorSP climberLeft;
+    /*public CANSparkMax frontRightMotor;
     public CANSparkMax backRightMotor;
     public CANSparkMax frontLeftMotor;
-    public CANSparkMax backLeftMotor;
+    public CANSparkMax backLeftMotor;*/
 
     // public AHRS ahrs;
 
     private static Container theTrueContainer;
 
     private Container() {
-        frontLeftMotor = new CANSparkMax(1, MotorType.kBrushless);
-        //climberRight = new VictorSP(1);
-       // climberLeft = new VictorSP(3);
-        frontLeftMotor.setInverted(true);
+        //frontLeftMotor = new CANSparkMax(1, MotorType.kBrushless);
+        climberRight = new VictorSP(1);
+        climberLeft = new VictorSP(2);
+        /*frontLeftMotor.setInverted(true);
 
          frontRightMotor = new CANSparkMax(RobotMap.DT_RIGHT_FORWARD, MotorType.kBrushless);
          frontRightMotor.setInverted(false);
@@ -43,7 +43,7 @@ public class Container {
          backRightMotor.setInverted(false);
         
         backLeftMotor = new CANSparkMax(RobotMap.DT_LEFT_BACK, MotorType.kBrushless);
-        backLeftMotor.setInverted(true);
+        backLeftMotor.setInverted(true);*/
 
        // ahrs = new AHRS(SerialPort.Port.kUSB);
         //ahrs.reset();
