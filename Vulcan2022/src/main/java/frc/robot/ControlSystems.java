@@ -18,8 +18,9 @@ public class ControlSystems {
     public ControlSystems() {
         rightstick = new Joystick(0);
         leftstick = new Joystick(1);
+        //manipulatorStick = new Joystick(2);
         manipulatorController = new XboxController(2);
-        driverController = new XboxController(3);
+        //driverController = new XboxController(3);
     }
     public double rightSpeed() {
         if (Math.abs(rightstick.getY()) < .1) {
@@ -46,7 +47,7 @@ public class ControlSystems {
         return manipulatorController.getRawAxis(RobotMap.MANIPULATOR_LEFT_JOYSTICK_Y);
     }
     public double mGamepadRightY() {
-        return manipulatorController.getRawAxis(RobotMap.MANIPULATOR_RIGHT_JOYSTICK_Y);
+        return manipulatorController.getRawAxis(3);
     }
     public double dGamepadLeftY() {
         return driverController.getRawAxis(RobotMap.MANIPULATOR_LEFT_JOYSTICK_Y);

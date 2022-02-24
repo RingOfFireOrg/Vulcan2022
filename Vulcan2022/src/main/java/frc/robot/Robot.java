@@ -48,13 +48,12 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     driveTrain.teleopControl();
     counter++;
-    /*double speed = ControlSystems.getInstance().rightstick.getY();
-    if (speed < 0.05 && speed > 0.e05) {
-      speed = 0;
-    }*/
-   // Container.getInstance().frontLeftMotor.set(speed);
-    Container.getInstance().shooterFalcon.set(ControlMode.PercentOutput, ControlSystems.getInstance().rightstick.getY()*.85);
-    Container.getInstance().frontLeftMotor.set(ControlSystems.getInstance().leftstick.getY()*.2);
-  Container.getInstance().transfer2.set(ControlSystems.getInstance().leftstick.getX());
+    Container.getInstance().shooterFalcon.set(ControlMode.PercentOutput, ControlSystems.getInstance().mGamepadLeftY()*.85);
+    //Container.getInstance().turret.set(ControlSystems.getInstance().leftstick.getY()*.2);
+  Container.getInstance().transfer2.set(ControlSystems.getInstance().mGamepadRightY());
+
+  /*double targetVelocity_UnitsPer100ms = ControlSystems.getInstance().rightstick.getY() * 2000.0 * 2048.0 / 600.0;
+   //2000 RPM in either direction 
+  Container.getInstance().shooterFalcon.set(ControlMode.Velocity, targetVelocity_UnitsPer100ms);*/
   }
 }

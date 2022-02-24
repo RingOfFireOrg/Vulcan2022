@@ -19,23 +19,27 @@ import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 
 public class Container {
     public RelativeEncoder leftEncoder, rightEncoder;
-    public CANSparkMax frontLeftMotor;
+    public CANSparkMax turret;
     public TalonFX shooterFalcon;
-    // public CANSparkMax frontRightMotor;
+    
     // public CANSparkMax backRightMotor;
     // public CANSparkMax backLeftMotor;
     public VictorSP transfer2;
 
+    public VictorSP frontLeftMotor;
+    public VictorSP frontRightMotor;
     // public AHRS ahrs;
 
     private static Container theTrueContainer;
 
     private Container() {
-        frontLeftMotor = new CANSparkMax(1, MotorType.kBrushless);
-        frontLeftMotor.setInverted(true);
+        turret = new CANSparkMax(1, MotorType.kBrushless);
+        turret.setInverted(true);
         shooterFalcon = new TalonFX(1);
         transfer2 = new VictorSP(2);
 
+        frontLeftMotor = new VictorSP(3);
+        frontRightMotor = new VictorSP(4);
         // frontRightMotor = new CANSparkMax(RobotMap.DT_RIGHT_FORWARD, MotorType.kBrushless);
         // frontRightMotor.setInverted(false);
         

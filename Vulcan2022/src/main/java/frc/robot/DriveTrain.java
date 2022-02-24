@@ -16,21 +16,21 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 public class DriveTrain extends TeleopModule {
 
     MotorController leftMotors, rightMotors;
-    private RelativeEncoder rightEncoder; // leftEncoder;
+    //private RelativeEncoder rightEncoder; // leftEncoder;
     
     public DriveTrain() {
-        //rightMotors = new MotorControllerGroup(Container.getInstance().frontRightMotor, Container.getInstance().backRightMotor);
-        //leftMotors = new MotorControllerGroup(Container.getInstance().frontLeftMotor, Container.getInstance().backLeftMotor);
+        rightMotors = new MotorControllerGroup(Container.getInstance().frontRightMotor);
+        leftMotors = new MotorControllerGroup(Container.getInstance().frontLeftMotor);
     }   
 
     @Override
     public void teleopControl() {
-        double joystickInputSpeed = ControlSystems.getInstance().leftstick.getY();
+        //double joystickInputSpeed = ControlSystems.getInstance().leftstick.getY();
         
-        //double leftInputSpeed = ControlSystems.getInstance().dGamepadLeftY();
-        //double rightInputSpeed = ControlSystems.getInstance().dGamepadRightY();
-        //rightMotors.set(rightInputSpeed);
-        //leftMotors.set(leftInputSpeed);
+        double leftInputSpeed = ControlSystems.getInstance().leftstick.getY();
+        double rightInputSpeed = ControlSystems.getInstance().rightstick.getY();
+        rightMotors.set(rightInputSpeed);
+        leftMotors.set(leftInputSpeed);
     }
 
     @Override
