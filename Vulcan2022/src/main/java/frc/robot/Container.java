@@ -31,16 +31,17 @@ public class Container {
     private static Container theTrueContainer;
 
     private Container() {
-        frontLeftMotor = new CANSparkMax(1, MotorType.kBrushless);
+        
         //climberRight = new VictorSP(1);
        // climberLeft = new VictorSP(3);
+        frontLeftMotor = new CANSparkMax(RobotMap.DT_LEFT_FORWARD, MotorType.kBrushless);
         frontLeftMotor.setInverted(true);
 
-         frontRightMotor = new CANSparkMax(RobotMap.DT_RIGHT_FORWARD, MotorType.kBrushless);
-         frontRightMotor.setInverted(false);
+        frontRightMotor = new CANSparkMax(RobotMap.DT_RIGHT_FORWARD, MotorType.kBrushless);
+        frontRightMotor.setInverted(false);
         
-         backRightMotor = new CANSparkMax(RobotMap.DT_RIGHT_BACK, MotorType.kBrushless);
-         backRightMotor.setInverted(false);
+        backRightMotor = new CANSparkMax(RobotMap.DT_RIGHT_BACK, MotorType.kBrushless);
+        backRightMotor.setInverted(false);
         
         backLeftMotor = new CANSparkMax(RobotMap.DT_LEFT_BACK, MotorType.kBrushless);
         backLeftMotor.setInverted(true);
