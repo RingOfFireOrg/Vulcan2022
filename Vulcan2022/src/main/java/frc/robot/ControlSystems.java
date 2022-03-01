@@ -54,12 +54,18 @@ public class ControlSystems {
     public double dGamepadRightY() {
         return driverController.getRawAxis(RobotMap.MANIPULATOR_RIGHT_JOYSTICK_Y);
     }
-    public double gamepadLeftTrigger() {
+    public boolean mGamepadA() {
+        return manipulatorController.getRawButton(1);
+    }
+    public boolean mGamepadB() {
+        return manipulatorController.getRawButton(2);
+    }
+    /*public double gamepadLeftTrigger() {
         return manipulatorController.getRawAxis(RobotMap.MANIPULATOR_LEFT_TRIGGER);
     }
     public double gamepadRightTrigger() {
         return manipulatorController.getRawAxis(RobotMap.MANIPULATOR_RIGHT_TRIGGER);
-    }
+    }*/
     public static ControlSystems getInstance() {
         if (thetrueControlSystem != null) {
             return thetrueControlSystem;

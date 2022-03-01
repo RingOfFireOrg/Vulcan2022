@@ -29,8 +29,8 @@ public class DriveTrain extends TeleopModule {
         
         double leftInputSpeed = ControlSystems.getInstance().dGamepadLeftY();
         double rightInputSpeed = ControlSystems.getInstance().dGamepadRightY();
-        rightMotors.set(0.2);
-        leftMotors.set(leftInputSpeed);
+        rightMotors.set(rightInputSpeed *.2);
+        leftMotors.set(leftInputSpeed *.2);
     }
 
     @Override

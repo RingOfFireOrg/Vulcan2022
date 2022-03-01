@@ -25,6 +25,7 @@ public class Container {
     public CANSparkMax backRightMotor;
     public CANSparkMax frontLeftMotor;
     public CANSparkMax backLeftMotor;
+    public VictorSP intakeMotor;
 
     // public AHRS ahrs;
 
@@ -45,6 +46,7 @@ public class Container {
         
         backLeftMotor = new CANSparkMax(RobotMap.DT_LEFT_BACK, MotorType.kBrushless);
         backLeftMotor.setInverted(true);
+        intakeMotor = new VictorSP(9);
 
        // ahrs = new AHRS(SerialPort.Port.kUSB);
         //ahrs.reset();

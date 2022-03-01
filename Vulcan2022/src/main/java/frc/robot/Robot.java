@@ -46,6 +46,13 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     driveTrain.teleopControl();
+if (ControlSystems.getInstance().mGamepadA()) {
+    Container.getInstance().intakeMotor.set(.8);
+} else if (ControlSystems.getInstance().mGamepadB()) {
+  Container.getInstance().intakeMotor.set(-.8);
+} else {
+  Container.getInstance().intakeMotor.set(0);
+}
     //subscribe to meldrop
     //drop at tilted towers
     //oh no dr disrespect is right there
