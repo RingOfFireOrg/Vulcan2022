@@ -49,6 +49,9 @@ public class ControlSystems {
     public double mGamepadRightY() {
         return manipulatorController.getRawAxis(3);
     }
+        public double mGamepadLeftX() {
+            return manipulatorController.getRawAxis(2);
+    }
     public double dGamepadLeftY() {
         return driverController.getRawAxis(RobotMap.MANIPULATOR_LEFT_JOYSTICK_Y);
     }
@@ -60,6 +63,9 @@ public class ControlSystems {
     }
     public double gamepadRightTrigger() {
         return manipulatorController.getRawAxis(RobotMap.MANIPULATOR_RIGHT_TRIGGER);
+    }
+    public boolean gamepadA() {
+        return manipulatorController.getRawButton(1); //nice
     }
     public static ControlSystems getInstance() {
         if (thetrueControlSystem != null) {
