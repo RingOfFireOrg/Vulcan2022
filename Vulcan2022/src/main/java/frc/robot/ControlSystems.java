@@ -60,6 +60,9 @@ public class ControlSystems {
     public double gamepadRightTrigger() {
         return manipulatorController.getRawAxis(RobotMap.MANIPULATOR_RIGHT_TRIGGER);
     }
+    public boolean mGamepadC() {
+        return manipulatorController.getRawButton(3);
+    }
     public static ControlSystems getInstance() {
         if (thetrueControlSystem != null) {
             return thetrueControlSystem;
