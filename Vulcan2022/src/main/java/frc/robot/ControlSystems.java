@@ -60,6 +60,9 @@ public class ControlSystems {
     public boolean mGamepadB() {
         return manipulatorController.getRawButton(2);
     }
+    public boolean mGamepadC() {
+        return manipulatorController.getRawButton(3);
+    }
     /*public double gamepadLeftTrigger() {
         return manipulatorController.getRawAxis(RobotMap.MANIPULATOR_LEFT_TRIGGER);
     }
