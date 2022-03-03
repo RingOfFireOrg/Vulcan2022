@@ -37,17 +37,16 @@ public class DriveTrain extends TeleopModule {
         double rightInputSpeed = ControlSystems.getInstance().dGamepadRightY();
         rightMotors.set(rightInputSpeed * driveCoefficient);
         leftMotors.set(leftInputSpeed * driveCoefficient * motorCorrection);
-        if (ControlSystems.getInstance().mGamepadC()){
+        /*if (ControlSystems.getInstance().mGamepadC()){
             linear.setPosition(50);
-    } else {
-        linear.setPosition(0);
-    }
-    if (ControlSystems.getInstance().dGamepadA()) {
-        driveCoefficient = .8;
-    } else if (ControlSystems.getInstance().dGamepadB()) {
-        driveCoefficient = .2; 
-    }
-
+        } else {
+            linear.setPosition(0);
+        }*/
+        if (ControlSystems.getInstance().dGamepadA()) {
+            driveCoefficient = .8;
+        } else if (ControlSystems.getInstance().dGamepadB()) {
+            driveCoefficient = .2; 
+        }
     }
 
     @Override

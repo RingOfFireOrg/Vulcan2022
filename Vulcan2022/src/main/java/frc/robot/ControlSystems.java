@@ -64,13 +64,13 @@ public class ControlSystems {
         return manipulatorController.getRawButton(3);
     }
     public boolean dGamepadC() {
-        return manipulatorController.getRawButton(3);
+        return driverController.getRawButton(3);
     }
     public boolean dGamepadA() {
-        return manipulatorController.getRawButton(1);
+        return driverController.getRawButton(1);
     }
     public boolean dGamepadB() {
-        return manipulatorController.getRawButton(2);
+        return driverController.getRawButton(2);
     }
     /*public double gamepadLeftTrigger() {
         return manipulatorController.getRawAxis(RobotMap.MANIPULATOR_LEFT_TRIGGER);
