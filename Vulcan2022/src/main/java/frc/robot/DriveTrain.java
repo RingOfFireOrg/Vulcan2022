@@ -18,11 +18,13 @@ public class DriveTrain extends TeleopModule {
     MotorController leftMotors, rightMotors;
     private RelativeEncoder rightEncoder; // leftEncoder;
     LinearServo linear;
+    LinearServo linear2;
     
     public DriveTrain() {
         //rightMotors = new MotorControllerGroup(Container.getInstance().frontRightMotor, Container.getInstance().backRightMotor);
         //leftMotors = new MotorControllerGroup(Container.getInstance().frontLeftMotor, Container.getInstance().backLeftMotor);
         linear = new LinearServo(9, 50, 5);
+        linear2 = new LinearServo(8, 50, 5);
     }   
 
     @Override
@@ -38,6 +40,12 @@ public class DriveTrain extends TeleopModule {
     } else {
         linear.setPosition(0);
     }
+
+    if (ControlSystems.getInstance().mGamepadC()){
+        linear2.setPosition(50);
+} else {
+    linear2.setPosition(0);
+}
     }
 
     @Override
