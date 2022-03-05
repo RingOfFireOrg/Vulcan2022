@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import javax.swing.TransferHandler.TransferSupport;
 
 import com.revrobotics.RelativeEncoder;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -28,6 +29,7 @@ public class Container {
     public VictorSP intakeMotor;
     public VictorSP transferMotor1;
     public VictorSP transferMotor2;
+    public TalonFX shooter;
 
     // public AHRS ahrs;
 
@@ -56,6 +58,8 @@ public class Container {
 
         transferMotor1 = new VictorSP(8);
         transferMotor2 = new VictorSP(7);
+
+        shooter = new TalonFX(6);
 
        // ahrs = new AHRS(SerialPort.Port.kUSB);
         //ahrs.reset();

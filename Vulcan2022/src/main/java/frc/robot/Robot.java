@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -71,6 +72,8 @@ public class Robot extends TimedRobot {
       Container.getInstance().transferMotor1.set(0);
       Container.getInstance().transferMotor2.set(0);
     }
+
+    Container.getInstance().shooter.set(ControlMode.PercentOutput, ControlSystems.getInstance().mGamepadRightY() * .8);
 
     //subscribe to meldrop
     //drop at tilted towers
