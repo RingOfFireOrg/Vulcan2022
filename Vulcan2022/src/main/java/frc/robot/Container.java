@@ -28,6 +28,7 @@ public class Container {
 
     public VictorSP frontLeftMotor;
     public VictorSP frontRightMotor;
+    public TalonFX jeremyMotor;
     // public AHRS ahrs;
 
     private static Container theTrueContainer;
@@ -36,6 +37,7 @@ public class Container {
         turret = new CANSparkMax(1, MotorType.kBrushless);
         turret.setInverted(true);
         shooterFalcon = new TalonFX(1);
+        jeremyMotor = new TalonFX(5);
         transfer2 = new VictorSP(2);
 
         frontLeftMotor = new VictorSP(3);

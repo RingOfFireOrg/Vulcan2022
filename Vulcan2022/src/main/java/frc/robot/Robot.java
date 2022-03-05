@@ -57,6 +57,9 @@ public class Robot extends TimedRobot {
   } else {
     Container.getInstance().shooterFalcon.set(ControlMode.PercentOutput, 0);
   }
+
+  Container.getInstance().jeremyMotor.set(ControlMode.PercentOutput, ControlSystems.getInstance().gamepadRightTrigger());
+
   /*double targetVelocity_UnitsPer100ms = ControlSystems.getInstance().rightstick.getY() * 2000.0 * 2048.0 / 600.0;
    //2000 RPM in either direction 
   Container.getInstance().shooterFalcon.set(ControlMode.Velocity, targetVelocity_UnitsPer100ms);*/
