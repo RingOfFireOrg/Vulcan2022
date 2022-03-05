@@ -36,25 +36,42 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
 
   }
+  
 
   @Override
   public void autonomousInit() {
     autonomous.autonomousInit();
   }
 
+  @Override
+  public void autonomousPeriodic() {
+    autonomous.autonomousPeriodic();
+  }
   
   @Override
   public void teleopPeriodic() {
     
     driveTrain.teleopControl();
     
-if (ControlSystems.getInstance().mGamepadA()) {
-    Container.getInstance().intakeMotor.set(.8);
-} else if (ControlSystems.getInstance().mGamepadB()) {
-  Container.getInstance().intakeMotor.set(-.8);
-} else {
-  Container.getInstance().intakeMotor.set(0);
-}
+    if (ControlSystems.getInstance().mGamepadA()) {
+      Container.getInstance().intakeMotor.set(.8);
+    } else if (ControlSystems.getInstance().mGamepadB()) {
+      Container.getInstance().intakeMotor.set(-.8);
+    } else {
+      Container.getInstance().intakeMotor.set(0);
+    }
+
+    if (ControlSystems.getInstance().mGamepadX()) {
+      Container.getInstance().transferMotor1.set(0.5);
+      Container.getInstance().transferMotor2.set(-0.5);
+    } else if (ControlSystems.getInstance().mGamepadY()) {
+      Container.getInstance().transferMotor1.set(-0.5);
+      Container.getInstance().transferMotor2.set(0.5);
+    } else {
+      Container.getInstance().transferMotor1.set(0);
+      Container.getInstance().transferMotor2.set(0);
+    }
+
     //subscribe to meldrop
     //drop at tilted towers
     //oh no dr disrespect is right there

@@ -17,31 +17,40 @@ enum autoStep {
     init,
     shoot,
     driveForward,
-    turn;
+    turn,
+    resetAll,
 };
 
 public class Autonomous {
     private MotorControllerGroup leftMotors, rightMotors; 
     private RelativeEncoder leftEncoder, rightEncoder;
-    //private int autonomousStep = -1;
+    private double leftEncoderOffset = 0, rightEncoderOffset = 0;
+    private int autonomousStep = 0;
     private double FEET = 8.50; // To go one FEET, the robot encoder has to read ~8.50 inches of the wheel
-    private double leftDiff = 0, rightDiff = leftDiff;
-    private double lastLeftDiff = 0, lastRightDiff = lastLeftDiff;
-    autoStep autonomousStep = autoStep.init;
+    private double leftDiff = 0, rightDiff = 0;
+    double leftPower = 0.2, rightPower = leftPower;
+    double prevLeftEncoderDistance = 0, prevRightEncoderDistance = 0;
+    private double driveOffset = 0;
+
+    //autoStep autonomousStep = autoStep.init;
 
     public void autonomousInit() {
-        //
+        rightMotors = new MotorControllerGroup(Container.getInstance().frontRightMotor,
+                Container.getInstance().backRightMotor);
+        leftMotors = new MotorControllerGroup(Container.getInstance().frontLeftMotor,
+                Container.getInstance().backLeftMotor);
+
+        //rightMotors.setInverted(true);
+        leftMotors.setInverted(true);
     }
     /**
      * STEPS to 4 ball auto + 1 human player
-     * 
+    NEW
      * 1. Intake on
      * 2. Forward 42"
      * 3. Turn 147.75 degrees
-     * 
-     * 
-     * 
-     * 
+
+    OLD
      * 1. Shoot preloaded ball
      * 2. Turn to ball with vision (approx 180 - x)
      * 3. Intake on
@@ -58,40 +67,53 @@ public class Autonomous {
      * 11. Backward the distance moved last step
      * 12. Aim to goal with vision
      * 13. Shoot
-     * 
+    
+    HUMAN PLAYER feeds 
      * Human: Aimbot
      */
     
     public double getLeftEncoderDistance() {
-        return Container.getInstance().getLeftInches();
+        return Container.getInstance().getLeftInches() - leftEncoderOffset;
     }
     public double getRightEncoderDistance() {
-        return Container.getInstance().getRightInches();
+        return Container.getInstance().getRightInches() - rightEncoderOffset;
     }
 
-    public void calculateEncoderDiff() {
-        leftDiff = getLeftEncoderDistance() - lastLeftDiff;
-        rightDiff = getRightEncoderDistance() - lastRightDiff;
-
-        lastLeftDiff = leftDiff;
-        lastRightDiff = rightDiff;
+    public void resetEncoders() {
+        leftEncoderOffset = Container.getInstance().getLeftInches();
+        rightEncoderOffset = Container.getInstance().getRightInches();
     }
+    
+    public void driveForward() {
+        double offset = 0.03;
 
-    public void move(double leftSpeed, double rightSpeed) {
-        double offset = 0.05;
+        double leftEncoderDistance = getLeftEncoderDistance();
+        double rightEncoderDistance = getRightEncoderDistance();
 
-        calculateEncoderDiff();
-        
+        double leftDiff = leftEncoderDistance - prevLeftEncoderDistance;
+        double rightDiff = rightEncoderDistance - prevRightEncoderDistance;
+
+        prevLeftEncoderDistance = leftEncoderDistance;
+        prevRightEncoderDistance = rightEncoderDistance;
+
+        // if left rotated more than right, slow down left & speed up right, else opposite
         if (leftDiff > rightDiff) {
-            leftSpeed -= offset;
-            rightSpeed += offset;
-        } else if (leftDiff < rightDiff) {
-            leftSpeed += offset;
-            rightSpeed -= offset;
+            leftPower = leftPower - offset;
+            rightPower = rightPower + offset;
+        }
+        else if (leftDiff < rightDiff) {
+            leftPower = leftPower + offset;
+            rightPower = rightPower - offset;
         }
 
-        leftMotors.set(leftSpeed);
-        rightMotors.set(rightSpeed);
+        leftMotors.set(leftPower);
+        rightMotors.set(rightPower);
+
+        System.out.println(leftDiff);
+        System.out.println(rightDiff);
+        System.out.println(leftPower);
+        System.out.println(rightPower);
+        System.out.println(System.lineSeparator());
     }
 
     public float getabsoluteDirection() {
@@ -100,20 +122,13 @@ public class Autonomous {
 
     public void autonomousPeriodic() {
         switch (autonomousStep) {
-            case init: {
-                
+            case 0: {
+                resetEncoders();
+                autonomousStep++;
                 break;
             }
-            case shoot: {
-
-                break;
-            }
-            case driveForward: {
-
-                break;
-            }
-            case turn: {
-
+            case 1: {
+                driveForward();
                 break;
             }
         };
