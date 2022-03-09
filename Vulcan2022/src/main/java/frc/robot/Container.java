@@ -30,15 +30,16 @@ public class Container {
     public VictorSP transferMotor1;
     public VictorSP transferMotor2;
     public TalonFX shooter;
+    public CANSparkMax turretMotor;
 
     // public AHRS ahrs;
 
     private static Container theTrueContainer;
 
     private Container() {
-        
-        //climberRight = new VictorSP(1);
-       // climberLeft = new VictorSP(3);
+        // climberRight = new VictorSP(1);
+        // climberLeft = new VictorSP(3);
+
         frontLeftMotor = new CANSparkMax(RobotMap.DT_LEFT_FORWARD, MotorType.kBrushless);
         frontLeftMotor.setInverted(true);
 
@@ -61,6 +62,8 @@ public class Container {
 
         shooter = new TalonFX(6);
 
+        turretMotor = new CANSparkMax(RobotMap.TURRET_SPINNER, MotorType.kBrushless);
+
        // ahrs = new AHRS(SerialPort.Port.kUSB);
         //ahrs.reset();
     }
@@ -73,7 +76,7 @@ public class Container {
         return rightEncoder.getPosition() / RobotMap.DRIVEBASE_GEAR_RATIO * Math.PI * RobotMap.DRIVE_WHEEL_DIAMETER_IN;
     }
 
-    public static Container getInstance() { //nice
+    public static Container get() { //nice
         if (theTrueContainer != null) {
             return theTrueContainer;
         }                   

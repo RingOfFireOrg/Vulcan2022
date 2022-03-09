@@ -23,14 +23,16 @@ public class Robot extends TimedRobot {
 
   protected DriveTrain driveTrain;
   protected Autonomous autonomous;
-  int counter = 0;
+  protected Turret turret;
   
   @Override
   public void robotInit() {
     driveTrain = new DriveTrain();
     autonomous = new Autonomous();
+    turret = new Turret();
 
     driveTrain.teleopInit();
+    turret.teleopInit();
   }
 
   @Override
@@ -53,39 +55,40 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     
     driveTrain.teleopControl();
+    //turret.teleopControl();
     
-    if (ControlSystems.getInstance().mGamepadA()) {
-      Container.getInstance().intakeMotor.set(.8);
-    } else if (ControlSystems.getInstance().mGamepadB()) {
-      Container.getInstance().intakeMotor.set(-.8);
+    if (ControlSystems.get().mGamepadA()) {
+      Container.get().intakeMotor.set(.8);
+    } else if (ControlSystems.get().mGamepadB()) {
+      Container.get().intakeMotor.set(-.8);
     } else {
-      Container.getInstance().intakeMotor.set(0);
+      Container.get().intakeMotor.set(0);
     }
 
-    if (ControlSystems.getInstance().mGamepadX()) {
-      Container.getInstance().transferMotor1.set(0.5);
-      Container.getInstance().transferMotor2.set(-0.5);
-    } else if (ControlSystems.getInstance().mGamepadY()) {
-      Container.getInstance().transferMotor1.set(-0.5);
-      Container.getInstance().transferMotor2.set(0.5);
+    if (ControlSystems.get().mGamepadX()) {
+      Container.get().transferMotor1.set(0.5);
+      Container.get().transferMotor2.set(-0.5);
+    } else if (ControlSystems.get().mGamepadY()) {
+      Container.get().transferMotor1.set(-0.5);
+      Container.get().transferMotor2.set(0.5);
     } else {
-      Container.getInstance().transferMotor1.set(0);
-      Container.getInstance().transferMotor2.set(0);
+      Container.get().transferMotor1.set(0);
+      Container.get().transferMotor2.set(0);
     }
 
-    Container.getInstance().shooter.set(ControlMode.PercentOutput, ControlSystems.getInstance().mGamepadRightY() * .8);
+    Container.get().shooter.set(ControlMode.PercentOutput, ControlSystems.get().mGamepadRightY() * .8);
 
     //subscribe to meldrop
     //drop at tilted towers
     //oh no dr disrespect is right there
     //die
     
-    /*double speed = ControlSystems.getInstance().rightstick.getY();
+    /*double speed = ControlSystems.get().rightstick.getY();
     if (speed < 0.05 && speed > 0.05) {
       speed = 0;
     }*/
-    //Container.getInstance().climberLeft.set(ControlSystems.getInstance().rightstick.getY());
-    //Container.getInstance().climberRight.set(ControlSystems.getInstance().leftstick.getY());
-    //Container.getInstance().frontLeftMotor.set(speed);
+    //Container.get().climberLeft.set(ControlSystems.get().rightstick.getY());
+    //Container.get().climberRight.set(ControlSystems.get().leftstick.getY());
+    //Container.get().frontLeftMotor.set(speed);
   }
 }

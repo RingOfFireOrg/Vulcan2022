@@ -22,8 +22,8 @@ public class DriveTrain extends TeleopModule {
     private double motorCorrection; // leftEncoder;
     
     public DriveTrain() {
-        rightMotors = new MotorControllerGroup(Container.getInstance().frontRightMotor, Container.getInstance().backRightMotor);
-        leftMotors = new MotorControllerGroup(Container.getInstance().frontLeftMotor, Container.getInstance().backLeftMotor);
+        rightMotors = new MotorControllerGroup(Container.get().frontRightMotor, Container.get().backRightMotor);
+        leftMotors = new MotorControllerGroup(Container.get().frontLeftMotor, Container.get().backLeftMotor);
         linear = new LinearServo(0, 50, 5);
         driveCoefficient = .2;
         motorCorrection = 1;
@@ -31,20 +31,20 @@ public class DriveTrain extends TeleopModule {
 
     @Override
     public void teleopControl() {
-        //double joystickInputSpeed = ControlSystems.getInstance().leftstick.getY();
+        //double joystickInputSpeed = ControlSystems.get().leftstick.getY();
         
-        double leftInputSpeed = ControlSystems.getInstance().dGamepadLeftY();
-        double rightInputSpeed = ControlSystems.getInstance().dGamepadRightY();
+        double leftInputSpeed = ControlSystems.get().dGamepadLeftY();
+        double rightInputSpeed = ControlSystems.get().dGamepadRightY();
         rightMotors.set(rightInputSpeed * driveCoefficient);
         leftMotors.set(leftInputSpeed * driveCoefficient * motorCorrection);
-        /*if (ControlSystems.getInstance().mGamepadX()){
+        /*if (ControlSystems.get().mGamepadX()){
             linear.setPosition(50);
         } else {
             linear.setPosition(0);
         }*/
-        if (ControlSystems.getInstance().dGamepadA()) {
+        if (ControlSystems.get().dGamepadA()) {
             driveCoefficient = .8;
-        } else if (ControlSystems.getInstance().dGamepadB()) {
+        } else if (ControlSystems.get().dGamepadB()) {
             driveCoefficient = .2; 
         }
     }

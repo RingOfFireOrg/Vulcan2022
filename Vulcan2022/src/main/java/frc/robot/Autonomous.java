@@ -35,10 +35,10 @@ public class Autonomous {
     //autoStep autonomousStep = autoStep.init;
 
     public void autonomousInit() {
-        rightMotors = new MotorControllerGroup(Container.getInstance().frontRightMotor,
-                Container.getInstance().backRightMotor);
-        leftMotors = new MotorControllerGroup(Container.getInstance().frontLeftMotor,
-                Container.getInstance().backLeftMotor);
+        rightMotors = new MotorControllerGroup(Container.get().frontRightMotor,
+                Container.get().backRightMotor);
+        leftMotors = new MotorControllerGroup(Container.get().frontLeftMotor,
+                Container.get().backLeftMotor);
 
         //rightMotors.setInverted(true);
         leftMotors.setInverted(true);
@@ -73,15 +73,15 @@ public class Autonomous {
      */
     
     public double getLeftEncoderDistance() {
-        return Container.getInstance().getLeftInches() - leftEncoderOffset;
+        return Container.get().getLeftInches() - leftEncoderOffset;
     }
     public double getRightEncoderDistance() {
-        return Container.getInstance().getRightInches() - rightEncoderOffset;
+        return Container.get().getRightInches() - rightEncoderOffset;
     }
 
     public void resetEncoders() {
-        leftEncoderOffset = Container.getInstance().getLeftInches();
-        rightEncoderOffset = Container.getInstance().getRightInches();
+        leftEncoderOffset = Container.get().getLeftInches();
+        rightEncoderOffset = Container.get().getRightInches();
     }
     
     public void driveForward() {
@@ -117,7 +117,7 @@ public class Autonomous {
     }
 
     public float getabsoluteDirection() {
-        return 0;//Container.getInstance().ahrs.getYaw();
+        return 0;//Container.get().ahrs.getYaw();
     }
 
     public void autonomousPeriodic() {
