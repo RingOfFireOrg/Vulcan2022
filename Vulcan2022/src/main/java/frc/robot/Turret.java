@@ -21,14 +21,6 @@ public class Turret extends TeleopModule {
 
         //Container.get().turretMotor.set(ControlSystems.get().manipulatorStickTwist() * 0.5);
     }
-    
-    private void turn(double speed){
-        Container.get().turretMotor.set(speed);
-    }
-
-    private void turnStop(){
-        Container.get().turretMotor.set(0);
-    }
 
     public double[] updateVisionVals() {
         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
@@ -59,8 +51,10 @@ public class Turret extends TeleopModule {
         double speed = visionVals[0] * 0.03;
         speed = Math.min(0.4, speed);
 
-        if (visionVals[0] < -visionrange || visionVals[0] > -visionrange) turn(speed);
-        else if(visionVals[3] == 1) turnStop();
+        if (visionVals[0] < -visionrange || visionVals[0] > -visionrange) 
+            Container.get().turretMotor.set(speed);
+        else if(visionVals[3] == 1) 
+            Container.get().turretMotor.set(0);
     }
 
     public void periodic() {
