@@ -63,6 +63,12 @@ public class ControlSystems {
     public boolean mGamepadC() {
         return manipulatorController.getRawButton(3);
     }
+    public boolean mGamepadB() {
+        return manipulatorController.getRawButton(2);
+    }
+    public boolean mGamepadA() {
+        return manipulatorController.getRawButton(1);
+    }
     public static ControlSystems getInstance() {
         if (thetrueControlSystem != null) {
             return thetrueControlSystem;

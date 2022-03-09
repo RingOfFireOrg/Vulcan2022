@@ -46,7 +46,19 @@ public class DriveTrain extends TeleopModule {
 } else {
     linear2.setPosition(0);
 }
+
+if (ControlSystems.getInstance().mGamepadA()){
+    Container.getInstance().winchMotor.set(1);
+} else if (ControlSystems.getInstance().mGamepadB()) {
+    Container.getInstance().winchMotor.set(-1);
+} else {
+    Container.getInstance().winchMotor.set(0);
+}
+
+
     }
+
+    
 
     @Override
     public void teleopInit() { }
