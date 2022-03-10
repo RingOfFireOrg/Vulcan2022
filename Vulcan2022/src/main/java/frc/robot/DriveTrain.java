@@ -55,6 +55,14 @@ if (ControlSystems.getInstance().mGamepadA()){
     Container.getInstance().winchMotor.set(0);
 }
 
+if (ControlSystems.getInstance().mGamepadLB()){
+    Container.getInstance().winchMotorTwo.set(1);
+} else if (ControlSystems.getInstance().mGamepadRB()) {
+    Container.getInstance().winchMotorTwo.set(-1);
+} else {
+    Container.getInstance().winchMotorTwo.set(0);
+}
+
 
     }
 
