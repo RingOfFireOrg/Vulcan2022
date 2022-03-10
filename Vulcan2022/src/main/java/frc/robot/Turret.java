@@ -1,4 +1,6 @@
 package frc.robot;
+import java.util.ResourceBundle.Control;
+
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -17,10 +19,11 @@ public class Turret extends TeleopModule {
     }
 
     public void teleopControl() {
-        //aimToTarget();
-
-        //Container.get().turretMotor.set(ControlSystems.get().manipulatorStickTwist() * 0.5);
+       if (ControlSystems.get().dGamepadRightBumper()) {
+        aimToTarget();
     }
+        //Container.get().turretMotor.set(ControlSystems.get().mGamepadLeftY() * .2);
+}
 
     public double[] updateVisionVals() {
         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
@@ -48,10 +51,12 @@ public class Turret extends TeleopModule {
     public void aimToTarget() {
         double[] visionVals = updateVisionVals();
 
-        double speed = visionVals[0] * 0.03;
+        double speed = visionVals[0] * 0.01;
+        //double speed = 0.2;
+
         speed = Math.min(0.4, speed);
 
-        if (visionVals[0] < -visionrange || visionVals[0] > -visionrange) 
+        if (visionVals[0] < -visionrange || visionVals[0] > visionrange) 
             Container.get().turretMotor.set(speed);
         else if(visionVals[3] == 1) 
             Container.get().turretMotor.set(0);

@@ -55,7 +55,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     
     driveTrain.teleopControl();
-    //turret.teleopControl();
+    turret.teleopControl();
     
     if (ControlSystems.get().mGamepadA()) {
       Container.get().intakeMotor.set(.8);
