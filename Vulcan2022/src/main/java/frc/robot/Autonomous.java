@@ -31,6 +31,7 @@ public class Autonomous {
     double leftPower = 0.2, rightPower = leftPower;
     double prevLeftEncoderDistance = 0, prevRightEncoderDistance = 0;
     private double driveOffset = 0;
+    private int readjustDriveMotorCount = 0;
 
     //autoStep autonomousStep = autoStep.init;
 
@@ -40,7 +41,7 @@ public class Autonomous {
         leftMotors = new MotorControllerGroup(Container.get().frontLeftMotor,
                 Container.get().backLeftMotor);
 
-        //rightMotors.setInverted(true);
+        rightMotors.setInverted(true);
         leftMotors.setInverted(true);
     }
     /**
@@ -83,27 +84,43 @@ public class Autonomous {
         leftEncoderOffset = Container.get().getLeftInches();
         rightEncoderOffset = Container.get().getRightInches();
     }
+
+    public void intakeIn() {
+        Container.get().intakeMotor.set(1);
+    }
+
+    public void intakeOut() {
+        Container.get().intakeMotor.set(-1);
+    }
+
+    public void transferIn() {
+
+    }
     
     public void driveForward() {
-        double offset = 0.03;
+        double offset = 0.003;
+        readjustDriveMotorCount++;
 
-        double leftEncoderDistance = getLeftEncoderDistance();
-        double rightEncoderDistance = getRightEncoderDistance();
+        if (readjustDriveMotorCount > 30) {
+            readjustDriveMotorCount = 0;
+            double leftEncoderDistance = getLeftEncoderDistance();
+            double rightEncoderDistance = getRightEncoderDistance();
 
-        double leftDiff = leftEncoderDistance - prevLeftEncoderDistance;
-        double rightDiff = rightEncoderDistance - prevRightEncoderDistance;
+            double leftDiff = leftEncoderDistance - prevLeftEncoderDistance;
+            double rightDiff = rightEncoderDistance - prevRightEncoderDistance;
 
-        prevLeftEncoderDistance = leftEncoderDistance;
-        prevRightEncoderDistance = rightEncoderDistance;
+            prevLeftEncoderDistance = leftEncoderDistance;
+            prevRightEncoderDistance = rightEncoderDistance;
 
-        // if left rotated more than right, slow down left & speed up right, else opposite
-        if (leftDiff > rightDiff) {
-            leftPower = leftPower - offset;
-            rightPower = rightPower + offset;
-        }
-        else if (leftDiff < rightDiff) {
-            leftPower = leftPower + offset;
-            rightPower = rightPower - offset;
+            // if left rotated more than right, slow down left & speed up right, else opposite
+            if (leftDiff > rightDiff) {
+                leftPower = leftPower - offset;
+                rightPower = rightPower + offset;
+            }
+            else if (leftDiff < rightDiff) {
+                leftPower = leftPower + offset;
+                rightPower = rightPower - offset;
+            }
         }
 
         leftMotors.set(leftPower);
@@ -128,7 +145,8 @@ public class Autonomous {
                 break;
             }
             case 1: {
-                driveForward();
+                //driveForward();
+                //intakeIn(1);
                 break;
             }
         };

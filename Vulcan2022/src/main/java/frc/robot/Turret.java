@@ -17,7 +17,7 @@ public class Turret extends TeleopModule {
     }
 
     public void teleopControl() {
-        aimToTarget();
+        //aimToTarget();
 
         //Container.get().turretMotor.set(ControlSystems.get().manipulatorStickTwist() * 0.5);
     }
