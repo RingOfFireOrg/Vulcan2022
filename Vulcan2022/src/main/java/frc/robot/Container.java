@@ -32,7 +32,7 @@ public class Container {
     public TalonFX shooter;
     public CANSparkMax turretMotor;
 
-    // public AHRS ahrs;
+    public AHRS ahrs;
 
     private static Container theTrueContainer;
 
@@ -64,8 +64,8 @@ public class Container {
 
        turretMotor = new CANSparkMax(RobotMap.TURRET_SPINNER, MotorType.kBrushless);
 
-       // ahrs = new AHRS(SerialPort.Port.kUSB);
-        //ahrs.reset();
+       ahrs = new AHRS(SerialPort.Port.kUSB);
+       ahrs.reset();
     }
 
     public double getLeftInches() {
