@@ -62,11 +62,11 @@ public class Container {
 
         shooter = new TalonFX(6);
 
-       turretMotor = new CANSparkMax(RobotMap.TURRET_SPINNER, MotorType.kBrushless);
+        turretMotor = new CANSparkMax(RobotMap.TURRET_SPINNER, MotorType.kBrushless);
 
-       ahrs = new AHRS(SerialPort.Port.kUSB);
-       ahrs.reset();
-    }
+        ahrs = new AHRS(SerialPort.Port.kUSB);
+        ahrs.reset();
+    } //nice
 
     public double getLeftInches() {
         return leftEncoder.getPosition() / RobotMap.DRIVEBASE_GEAR_RATIO * Math.PI * RobotMap.DRIVE_WHEEL_DIAMETER_IN;
@@ -76,7 +76,7 @@ public class Container {
         return rightEncoder.getPosition() / RobotMap.DRIVEBASE_GEAR_RATIO * Math.PI * RobotMap.DRIVE_WHEEL_DIAMETER_IN;
     }
 
-    public static Container get() { //nice
+    public static Container get() {
         if (theTrueContainer != null) {
             return theTrueContainer;
         }                   

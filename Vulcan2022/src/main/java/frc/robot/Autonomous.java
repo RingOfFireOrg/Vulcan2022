@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  
 import javax.swing.TransferHandler.TransferSupport;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -24,7 +27,11 @@ public class Autonomous {
     double prevLeftEncoderDistance = 0, prevRightEncoderDistance = 0;
     private double driveOffset = 0;
     private int readjustDriveMotorCount = 0;
-
+    private double turnOffset = 8;
+    public TalonFX shooter;
+    private AHRS ahrs;
+    private int timer = 0;
+    
     //autoStep autonomousStep = autoStep.init;
 
     public void autonomousInit() {
@@ -35,6 +42,9 @@ public class Autonomous {
 
         rightMotors.setInverted(true);
         leftMotors.setInverted(true);
+
+        shooter = Container.get().shooter;
+        ahrs = Container.get().ahrs;
     }
     
     public double getLeftEncoderDistance() {
@@ -111,69 +121,93 @@ public class Autonomous {
         rightMotors.set(0);
     }
 
+    public void shoot() {
+        shooter.set(ControlMode.PercentOutput, .75);
+    }
+
+    public void stopShooter() {
+        shooter.set(ControlMode.PercentOutput, 0);
+    }
+
     public float getAbsoluteDirection() {
-        return  Container.get().ahrs.getYaw();
+        return ahrs.getYaw();
+    }
+
+    public void turn(String direction, double amount) {
+        if (direction == "right") {
+            if (getAbsoluteDirection() < amount - turnOffset) {
+                turnRight();
+            } else {
+                autonomousStep++;
+                reset();
+            }
+        } else if (direction == "left") {
+            if (getAbsoluteDirection() > amount + turnOffset) {
+                turnLeft();
+            } else {
+                autonomousStep++;
+                reset();
+            }
+        }
     }
 
     public void reset(){
         driveStop();
         resetEncoders();
+        stopShooter();
+        ahrs.zeroYaw();
+        timer = 0;
     }
 
-    /**
-     * 1. 
-     */
-
     public void autonomousPeriodic() {
-        System.out.print(getLeftEncoderDistance());
+        SmartDashboard.putNumber("Absolute Direction", getAbsoluteDirection());
         switch (autonomousStep) {
             case 0: {
                 reset();
-                autonomousStep++;
+                autonomousStep = 400;
                 break;
             }
             case 1: {
-                if (getLeftEncoderDistance() > FEET * 3) {
+                //shoot 1 ball
+                if (timer < 60) {
+                    transferIn();
+                    shoot();
+                    timer++;
+                } else {
                     autonomousStep++;
                     reset();
-                } else {
-                    driveForward();
                 }
                 break;
             }
             case 2: {
-                if (getLeftEncoderDistance() < -FEET * 3) {
-                    autonomousStep++;
-                    reset();
-                } else {
-                    driveBackward();
-                }
+                //turn robot 122.25 degrees
+                turn("right", 122.25);
                 break;
             }
-            case 3: {
-                if (getAbsoluteDirection() > -90) {
-                    autonomousStep++;
-                    reset();
-                } else {
+            case 400: {
+                if (getAbsoluteDirection() < 90 - turnOffset) {
                     turnRight();
+                } else {
+                    autonomousStep++;
+                    reset();
                 }
                 break;
             }
-            case 4: {
-                if (getAbsoluteDirection() > -90) {
-                    autonomousStep++;
-                    reset();
-                } else {
+            case 401: {
+                if (getAbsoluteDirection() > -90 + turnOffset) {
                     turnLeft();
+                } else {
+                    autonomousStep++;
+                    reset();
                 }
                 break;
             }
-            case 5: {
-                if (getAbsoluteDirection() < 0) {
+            case 402: {
+                if (getAbsoluteDirection() < 0 - turnOffset) {
+                    turnRight();
+                } else {
                     autonomousStep++;
                     reset();
-                } else {
-                    turnRight();
                 }
                 break;
             }
