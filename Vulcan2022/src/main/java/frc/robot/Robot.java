@@ -76,19 +76,15 @@ public class Robot extends TimedRobot {
       Container.get().transferMotor2.set(0);
     }
 
-    Container.get().shooter.set(ControlMode.PercentOutput, ControlSystems.get().mGamepadRightY() * .8);
+    double shooterSpeed = 0;
+    if (ControlSystems.get().mGamepadRightBumper() == true) {
+      shooterSpeed = 1;
+    }
+    Container.get().shooter.set(ControlMode.PercentOutput, ControlSystems.get().mGamepadRightY() * 0.8);
 
     //subscribe to meldrop
     //drop at tilted towers
     //oh no dr disrespect is right there
     //die
-    
-    /*double speed = ControlSystems.get().rightstick.getY();
-    if (speed < 0.05 && speed > 0.05) {
-      speed = 0;
-    }*/
-    //Container.get().climberLeft.set(ControlSystems.get().rightstick.getY());
-    //Container.get().climberRight.set(ControlSystems.get().leftstick.getY());
-    //Container.get().frontLeftMotor.set(speed);
   }
 }

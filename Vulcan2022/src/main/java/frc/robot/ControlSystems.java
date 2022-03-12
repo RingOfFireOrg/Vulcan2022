@@ -69,6 +69,9 @@ public class ControlSystems {
     public boolean dGamepadRightBumper() {
         return driverController.getRawButton(6);
     }
+    public boolean mGamepadRightBumper() {
+        return manipulatorController.getRawButton(6);
+    }
     public boolean dGamepadA() {
         return driverController.getRawButton(1);
     }
