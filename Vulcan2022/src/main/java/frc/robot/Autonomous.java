@@ -7,6 +7,7 @@ import javax.swing.TransferHandler.TransferSupport;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -18,33 +19,37 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
 public class Autonomous {
     private MotorControllerGroup leftMotors, rightMotors; 
-    private RelativeEncoder leftEncoder, rightEncoder;
-    private double leftEncoderOffset = 0, rightEncoderOffset = 0;
-    private int autonomousStep = 0;
-    private double FEET = 8.50;
-    private double leftDiff = 0, rightDiff = 0;
-    double leftPower = 0.2, rightPower = leftPower;
-    double prevLeftEncoderDistance = 0, prevRightEncoderDistance = 0;
-    private double driveOffset = 0;
-    private int readjustDriveMotorCount = 0;
-    private double turnOffset = 8;
     public TalonFX shooter;
+    private CANSparkMax turret;
     private AHRS ahrs;
+
+    private double driveOffset = 3;
+    private double turnOffset = 8;
     private int timer = 0;
+    private int second = 20;
+    private double FEET = 8.50;
+    private double leftEncoderOffset = 0;
+    private double rightEncoderOffset = 0;
+    private double leftPower = 0.2, rightPower = leftPower;
     
-    //autoStep autonomousStep = autoStep.init;
+    private int autonomousStep = 0;
 
     public void autonomousInit() {
-        rightMotors = new MotorControllerGroup(Container.get().frontRightMotor,
-                Container.get().backRightMotor);
-        leftMotors = new MotorControllerGroup(Container.get().frontLeftMotor,
-                Container.get().backLeftMotor);
+        rightMotors = new MotorControllerGroup(
+            Container.get().frontRightMotor,
+            Container.get().backRightMotor
+        );
+        leftMotors = new MotorControllerGroup(
+            Container.get().frontLeftMotor,
+            Container.get().backLeftMotor
+        );
 
         rightMotors.setInverted(true);
         leftMotors.setInverted(true);
 
         shooter = Container.get().shooter;
         ahrs = Container.get().ahrs;
+        turret = Container.get().turretMotor;
     }
     
     public double getLeftEncoderDistance() {
@@ -67,53 +72,43 @@ public class Autonomous {
         Container.get().intakeMotor.set(-1);
     }
 
-    public void transferIn() {
+    public void intakeStop() {
+        Container.get().intakeMotor.set(0);
+    }
 
+    public void transferIn() {
+        Container.get().transferMotor1.set(0.6);
+        Container.get().transferMotor2.set(-0.6);
+    }
+
+    public void transferOut() {
+        Container.get().transferMotor1.set(-0.6);
+        Container.get().transferMotor2.set(0.6);
+    }
+
+    public void transferStop() {
+        Container.get().transferMotor1.set(0);
+        Container.get().transferMotor2.set(0);
     }
     
     public void driveForward() {
-        // double offset = 0.003;
-        // readjustDriveMotorCount++;
-
-        // if (readjustDriveMotorCount > 30) {
-        //     readjustDriveMotorCount = 0;
-        //     double leftEncoderDistance = getLeftEncoderDistance();
-        //     double rightEncoderDistance = getRightEncoderDistance();
-
-        //     double leftDiff = leftEncoderDistance - prevLeftEncoderDistance;
-        //     double rightDiff = rightEncoderDistance - prevRightEncoderDistance;
-
-        //     prevLeftEncoderDistance = leftEncoderDistance;
-        //     prevRightEncoderDistance = rightEncoderDistance;
-
-        //     // if left rotated more than right, slow down left & speed up right, else opposite
-        //     if (leftDiff > rightDiff) {
-        //         leftPower = leftPower - offset;
-        //         rightPower = rightPower + offset;
-        //     }
-        //     else if (leftDiff < rightDiff) {
-        //         leftPower = leftPower + offset;
-        //         rightPower = rightPower - offset;
-        //     }
-        // }
-
-        leftMotors.set(0.2);
-        rightMotors.set(0.2);
+        leftMotors.set(leftPower);
+        rightMotors.set(rightPower);
     }
 
     public void driveBackward() {
-        leftMotors.set(-0.2);
-        rightMotors.set(-0.2);
+        leftMotors.set(-leftPower);
+        rightMotors.set(-rightPower);
     }
 
     public void turnLeft() {
-        leftMotors.set(-0.2);
-        rightMotors.set(0.2);
+        leftMotors.set(-leftPower);
+        rightMotors.set(rightPower);
     }
 
     public void turnRight() {
-        leftMotors.set(0.2);
-        rightMotors.set(-0.2);
+        leftMotors.set(leftPower);
+        rightMotors.set(-rightPower);
     }
 
     public void driveStop() {
@@ -127,6 +122,18 @@ public class Autonomous {
 
     public void stopShooter() {
         shooter.set(ControlMode.PercentOutput, 0);
+    }
+
+    public void turretRight() {
+        turret.set(0.15);
+    }
+
+    public void turretLeft() {
+        turret.set(-0.15);
+    }
+
+    public void turretStop() {
+        turret.set(0);
     }
 
     public float getAbsoluteDirection() {
@@ -151,10 +158,31 @@ public class Autonomous {
         }
     }
 
+    public void drive(String direction, double amount) {
+        amount *= 0.1;
+        if (direction == "forward") {
+            if (getLeftEncoderDistance() < amount - driveOffset) {
+                driveForward();
+            } else {
+                autonomousStep++;
+                reset();
+            }
+        } else if (direction == "backward") {
+            if (getLeftEncoderDistance() > amount + driveOffset) {
+                driveBackward();
+            } else {
+                autonomousStep++;
+                reset();
+            }
+        }
+    }
+
     public void reset(){
         driveStop();
         resetEncoders();
         stopShooter();
+        intakeStop();
+        turretStop();
         ahrs.zeroYaw();
         timer = 0;
     }
@@ -169,7 +197,7 @@ public class Autonomous {
             }
             case 1: {
                 //shoot 1 ball
-                if (timer < 60) {
+                if (timer < second) {
                     transferIn();
                     shoot();
                     timer++;
@@ -180,8 +208,61 @@ public class Autonomous {
                 break;
             }
             case 2: {
-                //turn robot 122.25 degrees
+                //turn the robot 90 degrees
+                turn("right", 90);
+                break;
+            }
+            case 3: {
+                intakeIn();
+                drive("forward", FEET * 3);
+                break;
+            }
+            case 4: {
+                intakeStop();
                 turn("right", 122.25);
+
+                if (timer < second) {
+                    turretRight();
+                    timer++;
+                }
+                break;
+            }
+            case 5: {
+                drive("forward", FEET * 10.2);
+                intakeIn();
+                break;
+            }
+            case 6: {
+                //shoot 2 balls
+                if (timer < second * 2) {
+                    transferIn();
+                    shoot();
+                    timer++;
+                } else {
+                    autonomousStep++;
+                    reset();
+                }
+                break;
+            }
+            case 7: {
+                turn("left", -42.848);
+                break;
+            }
+            case 8: {
+                drive("forward", FEET * 13.25);
+                intakeIn();
+                break;
+            }
+            case 9: {
+                drive("backward", FEET * -13.25);
+                break;
+            }
+            case 10: {
+                turn("right", 90);
+                break;
+            }
+            case 11: {
+                shoot();
                 break;
             }
             case 400: {
@@ -211,7 +292,7 @@ public class Autonomous {
                 }
                 break;
             }
-            case 6: {
+            case 403: {
                 break;
             }
         };

@@ -76,11 +76,16 @@ public class Robot extends TimedRobot {
       Container.get().transferMotor2.set(0);
     }
 
-    double shooterSpeed = 0;
-    if (ControlSystems.get().mGamepadRightBumper() == true) {
-      shooterSpeed = 1;
-    }
-    Container.get().shooter.set(ControlMode.PercentOutput, ControlSystems.get().mGamepadRightY() * 0.8);
+   // double shooterSpeed = 0;
+    // if (ControlSystems.get().mGamepadRightBumper() == true) {
+    //   shooterSpeed = 0.8;
+    // } else if (ControlSystems.get().mGamepadLeftBumper() == true) {
+    //   shooterSpeed = 0.3;
+    // }
+
+    double shooterSpeed = ControlSystems.get().mGamepadRightBumper() ? 0.5 : ControlSystems.get().mGamepadLeftBumper() ? 0.35 : 0;
+
+    Container.get().shooter.set(ControlMode.PercentOutput, shooterSpeed);
 
     //subscribe to meldrop
     //drop at tilted towers

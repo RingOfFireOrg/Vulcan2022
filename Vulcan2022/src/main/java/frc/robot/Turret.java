@@ -52,7 +52,6 @@ public class Turret extends TeleopModule {
         double[] visionVals = updateVisionVals();
 
         double speed = visionVals[0] * 0.01;
-        //double speed = 0.2;
 
         speed = Math.min(0.4, speed);
 
