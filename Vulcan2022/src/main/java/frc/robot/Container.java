@@ -37,7 +37,7 @@ public class Container {
         climberRight = new VictorSP(1);
         climberLeft = new VictorSP(2);
         winchMotor = new VictorSP(3);
-        winchMotorTwo = new VictorSP(4);
+        winchMotorTwo = new VictorSP(0);
         /*frontLeftMotor.setInverted(true);
 
          frontRightMotor = new CANSparkMax(RobotMap.DT_RIGHT_FORWARD, MotorType.kBrushless);

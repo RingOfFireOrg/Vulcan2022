@@ -57,6 +57,17 @@ public class Robot extends TimedRobot {
     }
     Container.getInstance().climberLeft.set(speedLeft);
     Container.getInstance().climberRight.set(speedRight);
+
+    if (ControlSystems.getInstance().mGamepadA()) {
+      Container.getInstance().winchMotor.set(1);
+    } else if (ControlSystems.getInstance().mGamepadB()){
+      Container.getInstance().winchMotor.set(-1);
+    } else {
+      Container.getInstance().winchMotor.set(0);
+    }
+
+    Container.getInstance().winchMotorTwo.set(ControlSystems.getInstance().mGamepadLeftY());
+    
     //Container.getInstance().frontLeftMotor.set(speed);
   }
 }
