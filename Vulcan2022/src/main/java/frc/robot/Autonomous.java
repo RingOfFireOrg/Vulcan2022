@@ -121,7 +121,7 @@ public class Autonomous {
         shooter.set(ControlMode.PercentOutput, .38);
     }
 
-    public void stopShooter() {
+    public void shooterStop() {
         shooter.set(ControlMode.PercentOutput, 0);
     }
 
@@ -180,8 +180,9 @@ public class Autonomous {
     public void reset(){
         driveStop();
         resetEncoders();
-        stopShooter();
+        shooterStop();
         turretStop();
+        intakeStop();
         timer = 0;
     }
 
@@ -209,7 +210,7 @@ public class Autonomous {
                     break; 
                 }
                 case 4: {
-                    //shoot 2 balls
+                    //Start shooter
                     intakeStop();
                     if (timer < second * 2) {
                         shoot();
@@ -232,7 +233,7 @@ public class Autonomous {
                     break;
                 }
                 case 6: {
-                    stopShooter();
+                    shooterStop();
                     break;
                 }
             }
@@ -245,9 +246,12 @@ public class Autonomous {
                 }
                 case 1: {
                     //shoot 1 ball
-                    if (timer < second) {
-                        transferIn();
+                    if (timer < second * 2) {
                         shoot();
+                        timer++;
+                    } else if (timer < second * 2) {
+                        shoot();
+                        transferIn();
                         timer++;
                     } else {
                         autonomousStep++;
@@ -262,17 +266,24 @@ public class Autonomous {
                 }
                 case 3: {
                     intakeIn();
-                    drive("forward", FEET * 3);
+                    drive("forward", FEET * 5.34);
                     break;
                 }
                 case 4: {
-                    intakeStop();
-                    turn("right", 122.25);
+                    //turn("left", 122.25);
+                    if (getAbsoluteDirection() < 180 - turnOffset) {
+                        turnRight();
+                    } else if (getAbsoluteDirection() < -122.25 + turnOffset) {
+                        turnRight();
+                    } else {
+                        reset();
+                    }
 
                     if (timer < second) {
                         turretRight();
                         timer++;
                     }
+
                     break;
                 }
                 case 5: {
@@ -281,10 +292,21 @@ public class Autonomous {
                     break;
                 }
                 case 6: {
+                    turn("right", 12.96);
+                    break;
+                }
+                case 7: {
+                    drive("forward", FEET * 3);
+                    break;
+                }
+                case 8: {
                     //shoot 2 balls
                     if (timer < second * 2) {
-                        transferIn();
                         shoot();
+                        timer++;
+                    } else if (timer < second * 4) {
+                        shoot();
+                        transferIn();
                         timer++;
                     } else {
                         autonomousStep++;
@@ -292,57 +314,33 @@ public class Autonomous {
                     }
                     break;
                 }
-                case 7: {
-                    turn("left", -42.848);
+                default: {
                     break;
                 }
-                case 8: {
-                    drive("forward", FEET * 13.25);
-                    intakeIn();
-                    break;
-                }
-                case 9: {
-                    drive("backward", FEET * -13.25);
-                    break;
-                }
-                case 10: {
-                    turn("right", 90);
-                    break;
-                }
-                case 11: {
-                    shoot();
-                    break;
-                }
-                case 400: {
-                    if (getAbsoluteDirection() < 90 - turnOffset) {
-                        turnRight();
-                    } else {
-                        autonomousStep++;
-                        reset();
-                    }
-                    break;
-                }
-                case 401: {
-                    if (getAbsoluteDirection() > -90 + turnOffset) {
-                        turnLeft();
-                    } else {
-                        autonomousStep++;
-                        reset();
-                    }
-                    break;
-                }
-                case 402: {
-                    if (getAbsoluteDirection() < 0 - turnOffset) {
-                        turnRight();
-                    } else {
-                        autonomousStep++;
-                        reset();
-                    }
-                    break;
-                }
-                case 403: {
-                    break;
-                }
+                // case 9: {
+                //     //turn("left", -42.848);
+                //     if (getAbsoluteDirection() > -122.25 - 42.848 - turnOffset) {
+                //         turnLeft();
+                //     }
+                //     break;
+                // }
+                // case 8: {
+                //     drive("forward", FEET * 13.25);
+                //     intakeIn();
+                //     break;
+                // }
+                // case 9: {
+                //     drive("backward", FEET * -13.25);
+                //     break;
+                // }
+                // case 10: {
+                //     turn("right", 90);
+                //     break;
+                // }
+                // case 11: {
+                //     shoot();
+                //     break;
+                // }
             };
         }
     }

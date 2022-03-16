@@ -20,8 +20,10 @@ import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 public class Container {
     public RelativeEncoder leftEncoder, rightEncoder;
 
-    //public VictorSP climberRight;
-    //public VictorSP climberLeft;
+    public CANSparkMax climberRight;
+    public CANSparkMax climberLeft;
+    public VictorSP winchMotor;
+    public VictorSP winchMotorTwo;
     public CANSparkMax frontRightMotor;
     public CANSparkMax backRightMotor;
     public CANSparkMax frontLeftMotor;
@@ -37,9 +39,11 @@ public class Container {
     private static Container theTrueContainer;
 
     private Container() {
-        // climberRight = new VictorSP(1);
-        // climberLeft = new VictorSP(3);
-
+        climberRight = new CANSparkMax(7, MotorType.kBrushless);
+        climberLeft = new CANSparkMax(8, MotorType.kBrushless);
+        winchMotor = new VictorSP(3);
+        winchMotorTwo = new VictorSP(0);
+        
         frontLeftMotor = new CANSparkMax(RobotMap.DT_LEFT_FORWARD, MotorType.kBrushless);
         frontLeftMotor.setInverted(true);
 

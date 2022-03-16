@@ -24,15 +24,18 @@ public class Robot extends TimedRobot {
   protected DriveTrain driveTrain;
   protected Autonomous autonomous;
   protected Turret turret;
+  protected Climber climber;
   
   @Override
   public void robotInit() {
     driveTrain = new DriveTrain();
     autonomous = new Autonomous();
     turret = new Turret();
+    climber = new Climber();
 
     driveTrain.teleopInit();
     turret.teleopInit();
+    climber.teleopInit();
   }
 
   @Override
@@ -56,6 +59,7 @@ public class Robot extends TimedRobot {
     
     driveTrain.teleopControl();
     turret.teleopControl();
+    climber.teleopControl();
     
     if (ControlSystems.get().mGamepadA()) {
       Container.get().intakeMotor.set(.8);
