@@ -60,4 +60,6 @@ public class Turret extends TeleopModule {
         else if(visionVals[3] == 1) 
             Container.get().turretMotor.set(0);
     }
+
+    public void periodic() {}
 }

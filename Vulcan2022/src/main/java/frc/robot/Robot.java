@@ -25,6 +25,8 @@ public class Robot extends TimedRobot {
   protected Autonomous autonomous;
   protected Turret turret;
   protected Climber climber;
+  protected Transfer transfer;
+  protected Intake intake;
   
   @Override
   public void robotInit() {
@@ -32,17 +34,18 @@ public class Robot extends TimedRobot {
     autonomous = new Autonomous();
     turret = new Turret();
     climber = new Climber();
+    transfer = new Transfer();
+    intake = new Intake();
 
     driveTrain.teleopInit();
     turret.teleopInit();
     climber.teleopInit();
+    transfer.teleopInit();
+    intake.teleopInit();
   }
 
   @Override
-  public void robotPeriodic() {
-
-  }
-  
+  public void robotPeriodic() {}
 
   @Override
   public void autonomousInit() {
@@ -56,38 +59,20 @@ public class Robot extends TimedRobot {
   
   @Override
   public void teleopPeriodic() {
-    
     driveTrain.teleopControl();
     turret.teleopControl();
     climber.teleopControl();
-    
-    if (ControlSystems.get().mGamepadA()) {
-      Container.get().intakeMotor.set(.8);
-    } else if (ControlSystems.get().mGamepadB()) {
-      Container.get().intakeMotor.set(-.8);
-    } else {
-      Container.get().intakeMotor.set(0);
+    transfer.teleopControl();
+    intake.teleopControl();
+
+    double shooterSpeed = 0;
+    if (ControlSystems.get().mGamepadRightBumper() == true) {
+      shooterSpeed = 0.5;
+    } else if (ControlSystems.get().mGamepadLeftBumper() == true) {
+      shooterSpeed = 0.35;
     }
 
-    if (ControlSystems.get().mGamepadX()) {
-      Container.get().transferMotor1.set(0.5);
-      Container.get().transferMotor2.set(-0.5);
-    } else if (ControlSystems.get().mGamepadY()) {
-      Container.get().transferMotor1.set(-0.5);
-      Container.get().transferMotor2.set(0.5);
-    } else {
-      Container.get().transferMotor1.set(0);
-      Container.get().transferMotor2.set(0);
-    }
-
-   // double shooterSpeed = 0;
-    // if (ControlSystems.get().mGamepadRightBumper() == true) {
-    //   shooterSpeed = 0.8;
-    // } else if (ControlSystems.get().mGamepadLeftBumper() == true) {
-    //   shooterSpeed = 0.3;
-    // }
-
-    double shooterSpeed = ControlSystems.get().mGamepadRightBumper() ? 0.5 : ControlSystems.get().mGamepadLeftBumper() ? 0.35 : 0;
+    //double shooterSpeed = ControlSystems.get().mGamepadRightBumper() ? 0.5 : ControlSystems.get().mGamepadLeftBumper() ? 0.35 : 0;
 
     Container.get().shooter.set(ControlMode.PercentOutput, shooterSpeed);
 
