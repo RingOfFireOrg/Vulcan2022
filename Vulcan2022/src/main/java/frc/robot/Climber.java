@@ -8,22 +8,22 @@ public class Climber {
     CANSparkMax climberRight;
 
     public void teleopInit() {
-        //climberLeft = Container.get().climberLeft;
+        climberLeft = Container.get().climberLeft;
         climberRight = Container.get().climberRight;
     }
 
     public void teleopControl() {
         double speedRight = ControlSystems.get().cGamepadRightY();
-        if (speedRight > -0.1 && speedRight < 0.1) {
-            speedRight = 0;
-        }
+        // if (speedRight > -0.1 && speedRight < 0.1) {
+        //     speedRight = 0;
+        // }
 
         double speedLeft = ControlSystems.get().cGamepadLeftY();
-        if (speedLeft > -0.1 && speedLeft < 0.1) {
-            speedLeft = 0;
-        }
+        // if (speedLeft > -0.1 && speedLeft < 0.1) {
+        //     speedLeft = 0;
+        // }
 
-        //Container.get().climberLeft.set(speedLeft);
+        Container.get().climberLeft.set(speedLeft);
         Container.get().climberRight.set(speedRight);
 
         if (ControlSystems.get().cGamepadA()) {

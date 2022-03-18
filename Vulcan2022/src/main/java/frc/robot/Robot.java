@@ -59,22 +59,29 @@ public class Robot extends TimedRobot {
   
   @Override
   public void teleopPeriodic() {
-    driveTrain.teleopControl();
-    turret.teleopControl();
-    climber.teleopControl();
-    transfer.teleopControl();
-    intake.teleopControl();
+    // driveTrain.teleopControl();
+    // turret.teleopControl();
+    // climber.teleopControl();
+    // transfer.teleopControl();
+    // intake.teleopControl();
 
-    double shooterSpeed = 0;
-    if (ControlSystems.get().mGamepadRightBumper() == true) {
-      shooterSpeed = 0.5;
-    } else if (ControlSystems.get().mGamepadLeftBumper() == true) {
-      shooterSpeed = 0.35;
-    }
+    //Drivetrain (2)
+    Container.get().transferMotor1.set(1);
+    //Container.get().transferMotor2.set(1);
+    
+    
+    //turret
+    //Container.get().turretMotor.set(0.2);
 
-    //double shooterSpeed = ControlSystems.get().mGamepadRightBumper() ? 0.5 : ControlSystems.get().mGamepadLeftBumper() ? 0.35 : 0;
+    //climber
+    //Container.get().climberLeft.set(-0.6);
+    //Container.get().climberRight.set(-0.6);
+    
+    //shooter
+    //Container.get().shooter.set(ControlMode.PercentOutput, 0.25);
 
-    Container.get().shooter.set(ControlMode.PercentOutput, shooterSpeed);
+    //Intake
+    //Container.get().intakeMotor.set(1);
 
     //subscribe to meldrop
     //drop at tilted towers

@@ -1,14 +1,13 @@
 package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-
-import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
+import com.revrobotics.CANSparkMax;
 
 public class Shooter {
       
     public TalonFX shooter;
-    public VictorSP transferMotor1;
-    public VictorSP transferMotor2;
+    public CANSparkMax transferMotor1;
+    public CANSparkMax transferMotor2;
 
     private double lowShooterSpeed = 0.35;
     private double highShooterSpeed = 0.6;
