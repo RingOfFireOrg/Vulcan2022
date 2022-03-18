@@ -27,6 +27,7 @@ public class Robot extends TimedRobot {
   protected Climber climber;
   protected Transfer transfer;
   protected Intake intake;
+  protected Shooter shooter;
   
   @Override
   public void robotInit() {
@@ -36,12 +37,14 @@ public class Robot extends TimedRobot {
     climber = new Climber();
     transfer = new Transfer();
     intake = new Intake();
+    shooter = new Shooter();
 
     driveTrain.teleopInit();
     turret.teleopInit();
     climber.teleopInit();
     transfer.teleopInit();
     intake.teleopInit();
+    shooter.teleopInit();
   }
 
   @Override
@@ -59,24 +62,26 @@ public class Robot extends TimedRobot {
   
   @Override
   public void teleopPeriodic() {
-    // driveTrain.teleopControl();
-    // turret.teleopControl();
-    // climber.teleopControl();
-    // transfer.teleopControl();
-    // intake.teleopControl();
+    driveTrain.teleopControl();
+    turret.teleopControl();
+    climber.teleopControl();
+    transfer.teleopControl();
+    intake.teleopControl();
+    shooter.teleopControl();
 
     //Drivetrain (2)
-    Container.get().transferMotor1.set(1);
+    //Container.get().transferMotor1.set(1);
     //Container.get().transferMotor2.set(1);
     
     
-    //turret
+    //turret  
     //Container.get().turretMotor.set(0.2);
 
     //climber
     //Container.get().climberLeft.set(-0.6);
     //Container.get().climberRight.set(-0.6);
-    
+    //Container.get().winchMotorTwo.set(1);
+    //Container.get().winchMotor.set(-1);
     //shooter
     //Container.get().shooter.set(ControlMode.PercentOutput, 0.25);
 

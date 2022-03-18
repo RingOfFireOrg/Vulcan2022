@@ -28,7 +28,7 @@ public class Container {
     public CANSparkMax backRightMotor;
     public CANSparkMax frontLeftMotor;
     public CANSparkMax backLeftMotor;
-    public CANSparkMax intakeMotor;
+    public VictorSP intakeMotor;
     public CANSparkMax transferMotor1;
     public CANSparkMax transferMotor2;
     public TalonFX shooter;
@@ -57,7 +57,7 @@ public class Container {
         backLeftMotor = new CANSparkMax(RobotMap.DT_LEFT_BACK, MotorType.kBrushless);
         backLeftMotor.setInverted(true);
         
-        intakeMotor = new CANSparkMax(5, MotorType.kBrushless);
+        intakeMotor = new VictorSP(6);
 
         leftEncoder = frontLeftMotor.getEncoder();
         rightEncoder = frontRightMotor.getEncoder();
