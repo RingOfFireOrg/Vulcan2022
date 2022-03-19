@@ -15,15 +15,22 @@ public class Turret extends TeleopModule {
     private final double turretMotorSpeed = 0.2;
 
     public void teleopInit() {
-        turret = Container.get().turretMotor;
+        //turret = Container.get().turretMotor;
     }
 
     public void teleopControl() {
-       if (ControlSystems.get().dGamepadRightBumper()) {
-        aimToTarget();
-    }
+        //if (ControlSystems.get().dGamepadRightBumper()) {
+            //aimToTarget();
+        //}
         //Container.get().turretMotor.set(ControlSystems.get().mGamepadLeftY() * .2);
-}
+        // double turretSpeed = 0;
+        // if (ControlSystems.get().mGamepadPov() == "left") {
+        //     turretSpeed = 0.8;
+        // } else if (ControlSystems.get().mGamepadPov() == "right") {
+        //     turretSpeed = -0.8;
+        // }
+        //turret.set(turretSpeed);
+    }
 
     public double[] updateVisionVals() {
         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
@@ -49,16 +56,16 @@ public class Turret extends TeleopModule {
     }
 
     public void aimToTarget() {
-        double[] visionVals = updateVisionVals();
+        // double[] visionVals = updateVisionVals();
 
-        double speed = visionVals[0] * 0.01;
+        // double speed = visionVals[0] * 0.018;
 
-        speed = Math.min(0.4, speed);
+        // speed = Math.min(0.4, speed);
 
-        if (visionVals[0] < -visionrange || visionVals[0] > visionrange) 
-            Container.get().turretMotor.set(speed);
-        else if(visionVals[3] == 1) 
-            Container.get().turretMotor.set(0);
+        // if (visionVals[0] < -visionrange || visionVals[0] > visionrange) 
+        //     Container.get().turretMotor.set(speed);
+        // else if(visionVals[3] == 1) 
+        //     Container.get().turretMotor.set(0);
     }
 
     public void periodic() {}

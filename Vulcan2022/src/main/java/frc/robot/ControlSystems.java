@@ -81,6 +81,15 @@ public class ControlSystems {
     public double mGamepadRightTrigger() {
         return manipulatorController.getRawAxis(3);
     }
+    public String mGamepadPov() {
+        if (manipulatorController.getPOV() == 0) {
+            return "left";
+        } 
+        if (manipulatorController.getPOV() == 180) {
+            return "right";
+        }
+        return "";
+    }
 
     //Climber controller functions
     public String cGamepadPov() {

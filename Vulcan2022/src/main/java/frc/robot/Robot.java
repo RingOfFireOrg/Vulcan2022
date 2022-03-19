@@ -67,7 +67,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     driveTrain.teleopControl();
-    turret.teleopControl();
+    //turret.teleopControl();
     climber.teleopControl();
     transfer.teleopControl();
     intake.teleopControl();

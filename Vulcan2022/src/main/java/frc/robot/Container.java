@@ -67,7 +67,7 @@ public class Container {
 
         shooter = new TalonFX(6);
 //nice
-        turretMotor = new CANSparkMax(RobotMap.TURRET_SPINNER, MotorType.kBrushless);
+        //turretMotor = new CANSparkMax(RobotMap.TURRET_SPINNER, MotorType.kBrushless);
 
         ahrs = new AHRS(SerialPort.Port.kUSB);
         ahrs.reset();
