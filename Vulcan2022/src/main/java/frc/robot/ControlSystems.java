@@ -104,6 +104,12 @@ public class ControlSystems {
     public boolean cGamepadB() {
         return climberController.getRawButton(2);
     }
+    public boolean cGamepadX() {
+        return climberController.getRawButton(3);
+    }
+    public boolean cGamepadY() {
+        return climberController.getRawButton(4);
+    }
 
     public static ControlSystems get() {
         if (thetrueControlSystem != null) {

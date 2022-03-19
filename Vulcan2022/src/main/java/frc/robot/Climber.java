@@ -13,15 +13,24 @@ public class Climber {
     }
 
     public void teleopControl() {
-        double speedRight = ControlSystems.get().cGamepadRightY();
-        // if (speedRight > -0.1 && speedRight < 0.1) {
-        //     speedRight = 0;
-        // }
+        double speedRight = ControlSystems.get().cGamepadLeftY();
+        if (speedRight > -0.1 && speedRight < 0.1) {
+            speedRight = 0;
+        }
 
-        double speedLeft = ControlSystems.get().cGamepadLeftY();
-        // if (speedLeft > -0.1 && speedLeft < 0.1) {
-        //     speedLeft = 0;
-        // }
+        double speedLeft = ControlSystems.get().cGamepadRightY();
+        if (speedLeft > -0.1 && speedLeft < 0.1) {
+            speedLeft = 0;
+        }
+
+        if (ControlSystems.get().cGamepadX()) {
+            speedLeft = -1;
+            speedRight = -1;
+        }
+        if (ControlSystems.get().cGamepadY()) {
+            speedLeft = 1;
+            speedRight = 1;
+        }
 
         Container.get().climberLeft.set(speedLeft);
         Container.get().climberRight.set(speedRight);

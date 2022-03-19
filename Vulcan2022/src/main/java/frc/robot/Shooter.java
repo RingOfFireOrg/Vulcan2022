@@ -8,11 +8,11 @@ public class Shooter {
     public TalonFX shooter;
     public CANSparkMax transferMotor1;
     public CANSparkMax transferMotor2;
-
-    private double lowShooterSpeed = 0.35;
+    
+    private double lowShooterSpeed = 0.3;
     private double highShooterSpeed = 0.6;
     private double second = 20;
-    private double startTransferDelay = second * 2;
+    private double startTransferDelay = second * 3;
     private double startTransferTimer = 0;
     private double transferSpeed = 0.5;
 
@@ -30,14 +30,15 @@ public class Shooter {
             shooterSpeed = lowShooterSpeed;
         }
 
-        if (ControlSystems.get().dGamepadLeftBumper() == true) {
+        if (ControlSystems.get().mGamepadLeftBumper() == true) {
             startTransferTimer++;
             if (startTransferTimer > startTransferDelay) {
                 transferIn();
             } else {
                 transferStop();
             }
-        } else if (ControlSystems.get().dGamepadRightBumper() == true) {
+            shooterSpeed = lowShooterSpeed;
+        } else if (ControlSystems.get().mGamepadRightBumper() == true) {
             startTransferTimer++;
             if (startTransferTimer > startTransferDelay) {
                 transferIn();

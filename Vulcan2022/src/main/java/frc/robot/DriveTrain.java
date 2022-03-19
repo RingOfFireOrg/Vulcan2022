@@ -25,7 +25,7 @@ public class DriveTrain extends TeleopModule {
         rightMotors = new MotorControllerGroup(Container.get().frontRightMotor, Container.get().backRightMotor);
         leftMotors = new MotorControllerGroup(Container.get().frontLeftMotor, Container.get().backLeftMotor);
         linear = new LinearServo(0, 50, 5);
-        driveCoefficient = .2;
+        driveCoefficient = .25;
         motorCorrection = 1;
     }   
 
@@ -45,7 +45,7 @@ public class DriveTrain extends TeleopModule {
         if (ControlSystems.get().dGamepadA()) {
             driveCoefficient = .8;
         } else if (ControlSystems.get().dGamepadB()) {
-            driveCoefficient = .2; 
+            driveCoefficient = .25; 
         }
     }
 

@@ -103,13 +103,13 @@ public class Autonomous {
     }
 
     public void turnLeft() {
-        leftMotors.set(-leftPower/3.5);
-        rightMotors.set(rightPower/3.5);
+        leftMotors.set(-leftPower/1.5);
+        rightMotors.set(rightPower/1.5);
     }
 
     public void turnRight() {
-        leftMotors.set(leftPower/3.5);
-        rightMotors.set(-rightPower/3.5);
+        leftMotors.set(leftPower/1.5);
+        rightMotors.set(-rightPower/1.5);
     }
 
     public void driveStop() {
@@ -118,7 +118,7 @@ public class Autonomous {
     }
 
     public void shoot() {
-        shooter.set(ControlMode.PercentOutput, .38);
+        shooter.set(ControlMode.PercentOutput, .30);
     }
 
     public void shooterStop() {
@@ -212,7 +212,7 @@ public class Autonomous {
                 case 4: {
                     //Start shooter
                     intakeStop();
-                    if (timer < second * 2) {
+                    if (timer < second * 2.5) {
                         shoot();
                         timer++;
                     } else {
@@ -222,7 +222,7 @@ public class Autonomous {
                     break;
                 }
                 case 5: {
-                    if (timer < second * 4) {
+                    if (timer < second * 4.5) {
                         transferIn();
                         shoot();
                         timer++;
@@ -246,10 +246,10 @@ public class Autonomous {
                 }
                 case 1: {
                     //shoot 1 ball
-                    if (timer < second * 2) {
+                    if (timer < second * 2.5) {
                         shoot();
                         timer++;
-                    } else if (timer < second * 2) {
+                    } else if (timer < second * 2.5) {
                         shoot();
                         transferIn();
                         timer++;
@@ -301,10 +301,10 @@ public class Autonomous {
                 }
                 case 8: {
                     //shoot 2 balls
-                    if (timer < second * 2) {
+                    if (timer < second * 2.5) {
                         shoot();
                         timer++;
-                    } else if (timer < second * 4) {
+                    } else if (timer < second * 4.5) {
                         shoot();
                         transferIn();
                         timer++;

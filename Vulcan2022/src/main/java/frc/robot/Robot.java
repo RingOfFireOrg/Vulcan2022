@@ -13,7 +13,8 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
-
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 
 /**
  * This is a demo program showing the use of the DifferentialDrive class, specifically it contains
@@ -45,6 +46,9 @@ public class Robot extends TimedRobot {
     transfer.teleopInit();
     intake.teleopInit();
     shooter.teleopInit();
+
+    UsbCamera camera = CameraServer.startAutomaticCapture();
+    camera.setResolution(640, 480);
   }
 
   @Override
@@ -85,7 +89,7 @@ public class Robot extends TimedRobot {
     //shooter
     //Container.get().shooter.set(ControlMode.PercentOutput, 0.25);
 
-    //Intake
+    //Intake 
     //Container.get().intakeMotor.set(1);
 
     //subscribe to meldrop
