@@ -10,7 +10,7 @@ public class Shooter {
     public CANSparkMax transferMotor2;
     
     private double lowShooterSpeed = 0.3;
-    private double highShooterSpeed = 0.6;
+    private double highShooterSpeed = 0.65;
     private double second = 20;
     private double startTransferDelay = second * 3;
     private double startTransferTimer = 0;

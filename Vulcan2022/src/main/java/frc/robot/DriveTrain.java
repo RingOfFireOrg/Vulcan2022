@@ -43,9 +43,9 @@ public class DriveTrain extends TeleopModule {
             linear.setPosition(0);
         }*/
         if (ControlSystems.get().dGamepadA()) {
-            driveCoefficient = .8;
+            driveCoefficient = .75;
         } else if (ControlSystems.get().dGamepadB()) {
-            driveCoefficient = .25; 
+            driveCoefficient = .3; 
         }
     }
 

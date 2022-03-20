@@ -29,6 +29,7 @@ public class Robot extends TimedRobot {
   protected Transfer transfer;
   protected Intake intake;
   protected Shooter shooter;
+  protected Vision vision;
   
   @Override
   public void robotInit() {
@@ -39,6 +40,7 @@ public class Robot extends TimedRobot {
     transfer = new Transfer();
     intake = new Intake();
     shooter = new Shooter();
+    vision = new Vision();
 
     driveTrain.teleopInit();
     turret.teleopInit();
@@ -46,6 +48,7 @@ public class Robot extends TimedRobot {
     transfer.teleopInit();
     intake.teleopInit();
     shooter.teleopInit();
+    vision.teleopInit();
 
     UsbCamera camera = CameraServer.startAutomaticCapture();
     camera.setResolution(640, 480);
@@ -72,6 +75,7 @@ public class Robot extends TimedRobot {
     transfer.teleopControl();
     intake.teleopControl();
     shooter.teleopControl();
+    //vision.teleopControl();
 
     //Drivetrain (2)
     //Container.get().transferMotor1.set(1);

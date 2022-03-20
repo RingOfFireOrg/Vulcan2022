@@ -31,9 +31,10 @@ public class Autonomous {
     private double leftEncoderOffset = 0;
     private double rightEncoderOffset = 0;
     private double leftPower = 0.4, rightPower = leftPower;
+    private final int visionrange = 2;
     
     private int autonomousStep = 0;
-    private String autoType = "smartauto";
+    private String autoType = "dumbauto";
 
     public void autonomousInit() {
         rightMotors = new MotorControllerGroup(
@@ -78,13 +79,13 @@ public class Autonomous {
     }
 
     public void transferIn() {
-        Container.get().transferMotor1.set(0.6);
-        Container.get().transferMotor2.set(-0.6);
+        Container.get().transferMotor1.set(0.5);
+        Container.get().transferMotor2.set(-0.5);
     }
 
     public void transferOut() {
-        Container.get().transferMotor1.set(-0.6);
-        Container.get().transferMotor2.set(0.6);
+        Container.get().transferMotor1.set(-0.5);
+        Container.get().transferMotor2.set(0.5);
     }
 
     public void transferStop() {
@@ -110,6 +111,16 @@ public class Autonomous {
     public void turnRight() {
         leftMotors.set(leftPower / 2.5);
         rightMotors.set(-rightPower / 2.5);
+    }
+
+    public void turnLeftSlow() {
+        leftMotors.set(-leftPower / 3.5);
+        rightMotors.set(rightPower / 3.5);
+    }
+
+    public void turnRightSlow() {
+        leftMotors.set(leftPower / 3.5);
+        rightMotors.set(-rightPower / 3.5);
     }
 
     public void driveStop() {
@@ -178,6 +189,41 @@ public class Autonomous {
                 autonomousStep++;
                 reset();
             }
+        }
+    }
+
+    public double[] updateVisionVals() {
+        NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+        NetworkTableEntry tx = table.getEntry("tx");
+        NetworkTableEntry ty = table.getEntry("ty");
+        NetworkTableEntry ta = table.getEntry("ta");
+        NetworkTableEntry tv = table.getEntry("tv");
+
+        //read values
+        double x = tx.getDouble(0.0);
+        double y = ty.getDouble(0.0);
+        double area = ta.getDouble(0.0);
+        double v = tv.getDouble(0.0);
+        
+        //post to smart dashboard
+        SmartDashboard.putNumber("LimelightX", x);
+        SmartDashboard.putNumber("LimelightY", y);
+        SmartDashboard.putNumber("LimelightArea", area);
+        SmartDashboard.putNumber("LimelightTarget", v);
+
+        double[] arr = {x, y, area, v};
+        return arr;
+    }
+
+    public void aimToTarget() {
+        double[] visionVals = updateVisionVals();
+
+        if (visionVals[0] < -visionrange) {
+            turnLeftSlow();
+        } else if (visionVals[0] > visionrange) {
+            turnRightSlow();
+        } else {
+            driveStop();
         }
     }
 
@@ -264,9 +310,9 @@ public class Autonomous {
                     break; 
                 }
                 case 4: {
-                    //Start shooter
-                    intakeStop();
-                    if (timer < second * 3) {
+                    //Vision
+                    if (timer < second * 3.5) {
+                        aimToTarget();
                         shootHigh();
                         timer++;
                     } else {
