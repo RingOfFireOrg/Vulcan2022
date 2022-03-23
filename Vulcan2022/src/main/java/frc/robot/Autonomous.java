@@ -34,7 +34,7 @@ public class Autonomous {
     private final int visionrange = 2;
     
     private int autonomousStep = 0;
-    private String autoType = "dumbauto";
+    private String autoType = "smartauto";
 
     public void autonomousInit() {
         rightMotors = new MotorControllerGroup(
@@ -104,13 +104,13 @@ public class Autonomous {
     }
 
     public void turnLeft() {
-        leftMotors.set(-leftPower / 2.5);
-        rightMotors.set(rightPower / 2.5);
+        leftMotors.set(-leftPower / 2.75);
+        rightMotors.set(rightPower / 2.75);
     }
 
     public void turnRight() {
-        leftMotors.set(leftPower / 2.5);
-        rightMotors.set(-rightPower / 2.5);
+        leftMotors.set(leftPower / 2.75);
+        rightMotors.set(-rightPower / 2.75);
     }
 
     public void turnLeftSlow() {
