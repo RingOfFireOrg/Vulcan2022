@@ -1,3 +1,7 @@
+/**
+ * WE ARE NOT USING TURRET UNTIL STATES COMPETITION
+ */
+
 package frc.robot;
 import java.util.ResourceBundle.Control;
 

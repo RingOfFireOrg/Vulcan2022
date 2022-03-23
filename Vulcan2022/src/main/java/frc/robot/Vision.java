@@ -21,8 +21,7 @@ public class Vision extends TeleopModule {
     private MotorControllerGroup leftMotors, rightMotors;
 
     private final int visionrange = 2;
-    private final double turretMotorSpeed = 0.2;
-    private final double motorPower = 0.4;
+    private final double turnSpeed = 0.16;
 
     public void teleopInit() {
         rightMotors = new MotorControllerGroup(
@@ -33,23 +32,22 @@ public class Vision extends TeleopModule {
             Container.get().frontLeftMotor,
             Container.get().backLeftMotor
         );
-        //turret = Container.get().turretMotor;
     }
 
     public void teleopControl() {
-        // if (ControlSystems.get().dGamepadRightBumper()) {
-        //     aimToTarget();
-        // }
+        if (ControlSystems.get().dGamepadRightBumper()) {
+            aimToTarget();
+        }
     }
 
     public void turnLeft() {
-        leftMotors.set(-motorPower / 2.5);
-        rightMotors.set(motorPower / 2.5);
+        leftMotors.set(-turnSpeed);
+        rightMotors.set(turnSpeed);
     }
 
     public void turnRight() {
-        leftMotors.set(motorPower / 2.5);
-        rightMotors.set(-motorPower / 2.5);
+        leftMotors.set(turnSpeed);
+        rightMotors.set(-turnSpeed);
     }
 
     public void stop() {
@@ -83,13 +81,14 @@ public class Vision extends TeleopModule {
     public void aimToTarget() {
         double[] visionVals = updateVisionVals();
 
-        if (visionVals[0] < -visionrange) {
-            turnLeft();
-        } else if (visionVals[0] > visionrange) {
-            turnRight();
-        } else {
-            stop();
-        }
+        // visionVals 0 is the X distance from the center of camera to target
+        // visionVals 1 is the Y distance from the center of camera to target
+        // visionVals 2 is the distance from camera to target (?)
+        // visionVals 3 checks if there is a target in view
+
+        if (visionVals[0] < -visionrange) turnLeft();
+        else if (visionVals[0] > visionrange) turnRight();
+        else stop();
     }
 
     public void periodic() {}

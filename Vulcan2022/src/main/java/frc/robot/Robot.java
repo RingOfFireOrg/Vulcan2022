@@ -24,7 +24,7 @@ public class Robot extends TimedRobot {
 
   protected DriveTrain driveTrain;
   protected Autonomous autonomous;
-  protected Turret turret;
+  //protected Turret turret;
   protected Climber climber;
   protected Transfer transfer;
   protected Intake intake;
@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     driveTrain = new DriveTrain();
     autonomous = new Autonomous();
-    turret = new Turret();
+    //turret = new Turret();
     climber = new Climber();
     transfer = new Transfer();
     intake = new Intake();
@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
     vision = new Vision();
 
     driveTrain.teleopInit();
-    turret.teleopInit();
+    //turret.teleopInit();
     climber.teleopInit();
     transfer.teleopInit();
     intake.teleopInit();
@@ -75,7 +75,7 @@ public class Robot extends TimedRobot {
     transfer.teleopControl();
     intake.teleopControl();
     shooter.teleopControl();
-    //vision.teleopControl();
+    vision.teleopControl();
 
     //Drivetrain (2)
     //Container.get().transferMotor1.set(1);

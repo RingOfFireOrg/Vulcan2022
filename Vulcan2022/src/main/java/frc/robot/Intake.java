@@ -13,12 +13,14 @@ public class Intake {
     }
 
     public void teleopControl() {
-         if (ControlSystems.get().mGamepadA()) { //In
-             Container.get().intakeMotor.set(intakeSpeed);
-         } else if (ControlSystems.get().mGamepadB()) { //Out
-            Container.get().intakeMotor.set(-intakeSpeed);
-        } else {
-            Container.get().intakeMotor.set(0);
-        }
+        Container.get().intakeMotor.set(ControlSystems.get().mGamepadA()?intakeSpeed:ControlSystems.get().mGamepadB()?-intakeSpeed:0);
+
+        // if (ControlSystems.get().mGamepadA()) { //In
+        //     Container.get().intakeMotor.set(intakeSpeed);
+        // } else if (ControlSystems.get().mGamepadB()) { //Out
+        //     Container.get().intakeMotor.set(-intakeSpeed);
+        // } else {
+        //     Container.get().intakeMotor.set(0);
+        // }
     }
 }
