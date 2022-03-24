@@ -28,8 +28,7 @@ public class Robot extends TimedRobot {
   protected Climber climber;
   protected Transfer transfer;
   protected Intake intake;
-  protected Shooter shooter;
-  protected Vision vision;
+  protected VisionAndShooter visionShooter;
   
   @Override
   public void robotInit() {
@@ -39,16 +38,14 @@ public class Robot extends TimedRobot {
     climber = new Climber();
     transfer = new Transfer();
     intake = new Intake();
-    shooter = new Shooter();
-    vision = new Vision();
+    visionShooter = new VisionAndShooter();
 
     driveTrain.teleopInit();
     //turret.teleopInit();
     climber.teleopInit();
     transfer.teleopInit();
     intake.teleopInit();
-    shooter.teleopInit();
-    vision.teleopInit();
+    visionShooter.teleopInit();
 
     UsbCamera camera = CameraServer.startAutomaticCapture();
     camera.setResolution(640, 480);
@@ -74,8 +71,7 @@ public class Robot extends TimedRobot {
     climber.teleopControl();
     transfer.teleopControl();
     intake.teleopControl();
-    shooter.teleopControl();
-    vision.teleopControl();
+    visionShooter.teleopControl();
     
     //subscribe to meldrop
     //drop at tilted towers

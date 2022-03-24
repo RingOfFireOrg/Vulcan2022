@@ -16,7 +16,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Vision extends TeleopModule {
+public class VisionAndShooter extends TeleopModule {
     
     private MotorControllerGroup leftMotors, rightMotors;
     public TalonFX shooter;
@@ -53,7 +53,45 @@ public class Vision extends TeleopModule {
     }
 
     public void teleopControl() {
-        if (ControlSystems.get().dGamepadRightBumper()) aimAndMoveToTarget();
+        //Manipulator shooter
+        double shooterSpeed = 0;
+        if (ControlSystems.get().mGamepadRightTrigger() > 0.1) {
+            shooterSpeed = highShooterSpeed;
+        } else if (ControlSystems.get().mGamepadLeftTrigger() > 0.1) {
+            shooterSpeed = lowShooterSpeed;
+        }
+
+        if (ControlSystems.get().mGamepadLeftBumper() == true) {
+            startTransferTimer++;
+            if (startTransferTimer > startTransferDelay) {
+                transferMotor1.set(transferSpeed);
+                transferMotor2.set(-transferSpeed);
+            } else {
+                transferMotor1.set(0);
+                transferMotor2.set(0);
+            }
+            shooterSpeed = lowShooterSpeed;
+        } else if (ControlSystems.get().mGamepadRightBumper() == true) {
+            startTransferTimer++;
+            if (startTransferTimer > startTransferDelay) {
+                transferMotor1.set(transferSpeed);
+                transferMotor2.set(-transferSpeed);
+            } else {
+                transferMotor1.set(0);
+                transferMotor2.set(0);
+            }
+            shooterSpeed = highShooterSpeed;
+        } else {
+            startTransferTimer = 0;
+        }
+
+        //Driver vision turn and position
+        if (ControlSystems.get().dGamepadLeftBumper() == true) {
+            update();
+            //everythingBagel();
+        }
+
+        Container.get().shooter.set(ControlMode.PercentOutput, shooterSpeed);
     }
 
     public double[] updateVisionVals() {
@@ -91,8 +129,8 @@ public class Vision extends TeleopModule {
         return arr;
     }
 
-    public void aimAndMoveToTarget() {
-        //Just turn
+    public void update() {
+        //Turn and drive to desired location
         double[] visionVals = updateVisionVals();
 
         double degreesX = visionVals[0]; //-29.8 to 29.8
