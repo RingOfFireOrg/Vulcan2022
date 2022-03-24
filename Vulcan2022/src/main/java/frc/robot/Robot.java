@@ -76,26 +76,7 @@ public class Robot extends TimedRobot {
     intake.teleopControl();
     shooter.teleopControl();
     vision.teleopControl();
-
-    //Drivetrain (2)
-    //Container.get().transferMotor1.set(1);
-    //Container.get().transferMotor2.set(1);
     
-    
-    //turret  
-    //Container.get().turretMotor.set(0.2);
-
-    //climber
-    //Container.get().climberLeft.set(-0.6);
-    //Container.get().climberRight.set(-0.6);
-    //Container.get().winchMotorTwo.set(1);
-    //Container.get().winchMotor.set(-1);
-    //shooter
-    //Container.get().shooter.set(ControlMode.PercentOutput, 0.25);
-
-    //Intake 
-    //Container.get().intakeMotor.set(1);
-
     //subscribe to meldrop
     //drop at tilted towers
     //oh no dr disrespect is right there

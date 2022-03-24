@@ -13,15 +13,17 @@ public class Transfer {
     }
 
     public void teleopControl() {
-        if (ControlSystems.get().mGamepadX()) { //In
-            transferMotor1.set(transferSpeed);
-            transferMotor2.set(-transferSpeed);
-        } else if (ControlSystems.get().mGamepadY()) { //Out
-            transferMotor1.set(-transferSpeed);
-            transferMotor2.set(transferSpeed);
-        } else { //Stop
-            transferMotor1.set(0);
-            transferMotor2.set(0);
-        }
+        transferMotor1.set(ControlSystems.get().mGamepadX()?transferSpeed:ControlSystems.get().mGamepadY()?-transferSpeed:0);transferMotor2.set(ControlSystems.get().mGamepadX()?-transferSpeed:ControlSystems.get().mGamepadY()?transferSpeed:0);
+        
+        // if (ControlSystems.get().mGamepadX()) { //In
+        //     transferMotor1.set(transferSpeed);
+        //     transferMotor2.set(-transferSpeed);
+        // } else if (ControlSystems.get().mGamepadY()) { //Out
+        //     transferMotor1.set(-transferSpeed);
+        //     transferMotor2.set(transferSpeed);
+        // } else { //Stop
+        //     transferMotor1.set(0);
+        //     transferMotor2.set(0);
+        // }
     }
 }

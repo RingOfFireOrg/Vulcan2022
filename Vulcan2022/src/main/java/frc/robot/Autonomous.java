@@ -218,13 +218,14 @@ public class Autonomous {
     public void aimToTarget() {
         double[] visionVals = updateVisionVals();
 
-        if (visionVals[0] < -visionrange) {
-            turnLeftSlow();
-        } else if (visionVals[0] > visionrange) {
-            turnRightSlow();
-        } else {
-            driveStop();
-        }
+        // visionVals 0 is the X distance from the center of camera to target
+        // visionVals 1 is the Y distance from the center of camera to target
+        // visionVals 2 is the distance from camera to target (?)
+        // visionVals 3 checks if there is a target in view
+
+        if (visionVals[0] < -visionrange) turnLeftSlow();
+        else if (visionVals[0] > visionrange) turnRightSlow();
+        else driveStop();
     }
 
     public void reset(){
@@ -325,6 +326,56 @@ public class Autonomous {
                     if (timer < second * 4.5) {
                         transferIn();
                         shootHigh();
+                        timer++;
+                    } else {
+                        autonomousStep++;
+                        reset();
+                    }
+                    break;
+                }
+                case 6: {
+                    shooterStop();
+                    break;
+                }
+            }
+        }
+        else if (autoType == "dumbvisionauto") {
+            switch (autonomousStep) {
+                case 0: {
+                    reset();
+                    autonomousStep++;
+                    break;
+                }
+                case 1: {
+                    intakeIn();
+                    drive("forward", FEET * 8.34);
+                    break; 
+                }
+                case 2: {
+                    turn("right", 180);
+                    break;
+                }
+                case 3: {
+                    intakeIn();
+                    drive("forward", FEET * 14.51);
+                    break; 
+                }
+                case 4: {
+                    //Start shooter
+                    intakeStop();
+                    if (timer < second * 2.5) {
+                        shoot();
+                        timer++;
+                    } else {
+                        autonomousStep++;
+                        reset();
+                    }
+                    break;
+                }
+                case 5: {
+                    if (timer < second * 4.5) {
+                        transferIn();
+                        shoot();
                         timer++;
                     } else {
                         autonomousStep++;
