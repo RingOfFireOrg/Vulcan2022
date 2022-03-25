@@ -158,7 +158,7 @@ public class VisionAndShooter extends TeleopModule {
         double distance_adjust = KpDistance * distance_error;
 
         leftMotors.set(steering_adjust + distance_adjust);
-        rightMotors.set(steering_adjust + distance_adjust);
+        rightMotors.set(-steering_adjust + distance_adjust);
     }
 
     public void everythingBagel() {
@@ -193,7 +193,7 @@ public class VisionAndShooter extends TeleopModule {
         }
 
         leftMotors.set(steering_adjust + distance_adjust);
-        rightMotors.set(steering_adjust + distance_adjust);
+        rightMotors.set(-steering_adjust + distance_adjust);
 
         double shooterSpeed = highShooterSpeed;
         if (inDesiredPosition && inDesiredAngle) {
