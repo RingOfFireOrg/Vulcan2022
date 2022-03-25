@@ -41,7 +41,7 @@ public class VisionAndShooter extends TeleopModule {
     private final double highShooterSpeed = 0.65;
     private final double second = 20;
     private final double startTransferDelay = second * 3;
-    private final double transferSpeed = 0.35;
+    private final double transferSpeed = 0.4;
     private double startTransferTimer = 0;
 
     public void teleopInit() {
@@ -70,22 +70,20 @@ public class VisionAndShooter extends TeleopModule {
         if (ControlSystems.get().mGamepadLeftBumper() == true) {
             shooterSpeed = lowShooterSpeed;
             startTransferTimer++;
+
             if (startTransferTimer > startTransferDelay) {
-                transferMotor1.set(transferSpeed);
-                transferMotor2.set(-transferSpeed);
+                transferIn();
             } else {
-                transferMotor1.set(0);
-                transferMotor2.set(0);
+                transferStop();
             }
         } else if (ControlSystems.get().mGamepadRightBumper() == true) {
             shooterSpeed = highShooterSpeed;
             startTransferTimer++;
+            
             if (startTransferTimer > startTransferDelay) {
-                transferMotor1.set(transferSpeed);
-                transferMotor2.set(-transferSpeed);
+                transferIn();
             } else {
-                transferMotor1.set(0);
-                transferMotor2.set(0);
+                transferStop();
             }
         } else {
             startTransferTimer = 0;
@@ -95,12 +93,14 @@ public class VisionAndShooter extends TeleopModule {
         if (ControlSystems.get().dGamepadLeftBumper() == true) {
             aimToTargetAndDrive();
             //everythingBagel();
+            //aimToTargetAndDriveOld();
+            //everythingBagelOld();
         }
 
         Container.get().shooter.set(ControlMode.PercentOutput, shooterSpeed);
     }
 
-    public double[] updateVisionVals() {
+    public double[] getVisionVals() {
         // https://docs.limelightvision.io/en/latest/networktables_api.html
         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
         NetworkTableEntry tx = table.getEntry("tx");
@@ -135,9 +135,84 @@ public class VisionAndShooter extends TeleopModule {
         return arr;
     }
 
-    public void  aimToTargetAndDrive() {
+    public void aimToTargetAndDrive() {
+        double[] visionVals = getVisionVals();
+        double KpAim = -0.1f;
+        double KpDistance = -0.1f;
+        double min_aim = 0.05f;
+
+        double tx = visionVals[0];
+        double ty = visionVals[1];
+
+        double heading_error = -tx;
+        double distance_error = -ty;
+        double steering_adjust = 0.0f;
+
+        if (tx > 1.0) {
+            steering_adjust = KpAim*heading_error - min_aim;
+        }
+        else if (tx < -1.0) {
+            steering_adjust = KpAim*heading_error + min_aim;
+        }
+
+        double distance_adjust = KpDistance * distance_error;
+
+        leftMotors.set(steering_adjust + distance_adjust);
+        rightMotors.set(steering_adjust + distance_adjust);
+    }
+
+    public void everythingBagel() {
+        double[] visionVals = getVisionVals();
+        double KpAim = -0.1f;
+        double KpDistance = -0.1f;
+        double min_aim = 0.05f;
+
+        double tx = visionVals[0];
+        double ty = visionVals[1];
+
+        double heading_error = -tx;
+        double distance_error = -ty;
+        double steering_adjust = 0.0f;
+
+        boolean inDesiredPosition = false;
+        boolean inDesiredAngle = false;
+
+        if (tx > 1.0) {
+            steering_adjust = KpAim*heading_error - min_aim;
+        }
+        else if (tx < -1.0) {
+            steering_adjust = KpAim*heading_error + min_aim;
+        }
+        else {
+            inDesiredAngle = true;
+        }
+
+        double distance_adjust = KpDistance * distance_error;
+        if (distance_adjust < 0.05) {
+            inDesiredPosition = true;
+        }
+
+        leftMotors.set(steering_adjust + distance_adjust);
+        rightMotors.set(steering_adjust + distance_adjust);
+
+        double shooterSpeed = highShooterSpeed;
+        if (inDesiredPosition && inDesiredAngle) {
+            startTransferTimer++;
+            if (startTransferTimer > startTransferDelay) {
+                transferIn();
+            } else {
+                transferStop();
+            } 
+        } else {
+            startTransferTimer = 0;
+        }
+
+        Container.get().shooter.set(ControlMode.PercentOutput, shooterSpeed);
+    }
+
+    public void  aimToTargetAndDriveOld() {
         //Turn and drive to desired location
-        double[] visionVals = updateVisionVals();
+        double[] visionVals = getVisionVals();
 
         double degreesX = visionVals[0]; //-29.8 to 29.8
         double degreesY = visionVals[1]; //-24.85 to 24.85
@@ -185,10 +260,10 @@ public class VisionAndShooter extends TeleopModule {
         rightMotors.set(-steering_adjust + additionalSteeringAdjust);
     }
 
-    public void everythingBagel() {
+    public void everythingBagelOld() {
         //Aim to target, drive to desired position, auto run shooter and transfer
 
-        double[] visionVals = updateVisionVals();
+        double[] visionVals = getVisionVals();
 
         double degreesX = visionVals[0]; //-29.8 to 29.8
         double degreesY = visionVals[1]; //-24.85 to 24.85 (STATES COMPETITION)
@@ -248,17 +323,25 @@ public class VisionAndShooter extends TeleopModule {
         if (inDesiredPosition && inDesiredAngle) {
             startTransferTimer++;
             if (startTransferTimer > startTransferDelay) {
-                transferMotor1.set(transferSpeed);
-                transferMotor2.set(-transferSpeed);
+                transferIn();
             } else {
-                transferMotor1.set(0);
-                transferMotor2.set(0);
+                transferStop();
             } 
         } else {
             startTransferTimer = 0;
         }
 
         Container.get().shooter.set(ControlMode.PercentOutput, shooterSpeed);
+    }
+
+    public void transferIn() {
+        transferMotor1.set(transferSpeed);
+        transferMotor2.set(-transferSpeed);
+    }
+
+    public void transferStop() {
+        transferMotor1.set(0);
+        transferMotor2.set(0);
     }
 
     public void periodic() {}

@@ -9,16 +9,16 @@ import edu.wpi.first.wpilibj.XboxController;
 public class ControlSystems {
     
     private static ControlSystems thetrueControlSystem;
-    Joystick rightstick;
-    Joystick leftstick;
+    // Joystick rightstick;
+    // Joystick leftstick;
     Joystick manipulatorStick;
     XboxController driverController;
     XboxController manipulatorController;
     XboxController climberController;
 
     public ControlSystems() {
-        rightstick = new Joystick(0);
-        leftstick = new Joystick(1);
+        // rightstick = new Joystick(0);
+        // leftstick = new Joystick(1);
         manipulatorController = new XboxController(2);
         driverController = new XboxController(3);
         climberController = new XboxController(4);
