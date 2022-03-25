@@ -135,6 +135,28 @@ public class VisionAndShooter extends TeleopModule {
         return arr;
     }
 
+    
+    public void aimToTarget() {
+        double[] visionVals = getVisionVals();
+        double KpAim = -0.07f;
+        double min_aim = 0.05f;
+
+        double tx = visionVals[0];
+
+        double heading_error = -tx;
+        double steering_adjust = 0.0f;
+
+        if (tx > 1.0) {
+            steering_adjust = KpAim*heading_error - min_aim;
+        }
+        else if (tx < -1.0) {
+            steering_adjust = KpAim*heading_error + min_aim;
+        }
+
+        leftMotors.set(steering_adjust);
+        rightMotors.set(-steering_adjust);
+    }
+
     public void aimToTargetAndDrive() {
         double[] visionVals = getVisionVals();
         double KpAim = -0.07f;
@@ -194,130 +216,6 @@ public class VisionAndShooter extends TeleopModule {
 
         leftMotors.set(steering_adjust + distance_adjust);
         rightMotors.set(-steering_adjust + distance_adjust);
-
-        double shooterSpeed = highShooterSpeed;
-        if (inDesiredPosition && inDesiredAngle) {
-            startTransferTimer++;
-            if (startTransferTimer > startTransferDelay) {
-                transferIn();
-            } else {
-                transferStop();
-            } 
-        } else {
-            startTransferTimer = 0;
-        }
-
-        Container.get().shooter.set(ControlMode.PercentOutput, shooterSpeed);
-    }
-
-    public void  aimToTargetAndDriveOld() {
-        //Turn and drive to desired location
-        double[] visionVals = getVisionVals();
-
-        double degreesX = visionVals[0]; //-29.8 to 29.8
-        double degreesY = visionVals[1]; //-24.85 to 24.85
-        double distanceToTarget = visionVals[2];
-        double targetInVision = visionVals[3];
-
-        double steering_adjust = 0;
-        double speedDivideCoef = turnSpeed * 29.8;
-        double additionalSteeringAdjust = 0;
-        double min = 0.05;
-        double max = maxTurnSpeed;
-
-        //Calculate steering_adjust
-        if (targetInVision == 0) {
-            //No target, turn robot until it finds one
-            //steering_adjust = 0.3;
-        } else {
-            if (degreesX < -visionrange) {
-                //Target to the left
-                steering_adjust = -turnSpeed * (degreesX / speedDivideCoef) - min;
-            }
-            else if (degreesX > visionrange) {
-                //Target to the right
-                steering_adjust = turnSpeed * (degreesX / speedDivideCoef) + min;
-            }
-            
-            additionalSteeringAdjust = -0.1 * (degreesY - targetYAngle);
-            additionalSteeringAdjust = Math.min(additionalSteeringAdjust, 0.3);
-            if (additionalSteeringAdjust < 0.01) additionalSteeringAdjust = 0;
-            // if (distanceToTarget < targetDistance - distanceRange) {
-            //     //Robot too close to target, drive backwards!
-            //     additionalSteeringAdjust -= 0.15;
-            // }
-            // else if (distanceToTarget > targetDistance + distanceRange) {
-            //     //Robot too far from target, drive forwards!
-            //     additionalSteeringAdjust += 0.15;
-            // }
-        }
-        
-        //Clamp speed to -0.3, 0.3
-        steering_adjust = Math.min(Math.max(steering_adjust, min), max);
-
-        //Resolve
-        leftMotors.set(steering_adjust + additionalSteeringAdjust);
-        rightMotors.set(-steering_adjust + additionalSteeringAdjust);
-    }
-
-    public void everythingBagelOld() {
-        //Aim to target, drive to desired position, auto run shooter and transfer
-
-        double[] visionVals = getVisionVals();
-
-        double degreesX = visionVals[0]; //-29.8 to 29.8
-        double degreesY = visionVals[1]; //-24.85 to 24.85 (STATES COMPETITION)
-        double distanceToTarget = visionVals[2];
-        double targetInVision = visionVals[3];
-
-        double steering_adjust = 0;
-        double speedDivideCoef = turnSpeed * 29.8;
-        double additionalSteeringAdjust = 0;
-        double min = 0.05;
-        double max = maxTurnSpeed;
-
-        boolean inDesiredAngle = false;
-        boolean inDesiredPosition = false;
-
-        //Calculate steering_adjust
-        if (targetInVision == 0) {
-            //No target, turn robot until it finds one
-            //steering_adjust = 0.3;
-        } else {
-            if (degreesX < -visionrange) {
-                //Target to the left
-                steering_adjust = -turnSpeed * (degreesX / speedDivideCoef) - min;
-            }
-            else if (degreesX > visionrange) {
-                //Target to the right
-                steering_adjust = turnSpeed * (degreesX / speedDivideCoef) + min;
-            } else {
-                inDesiredAngle = true;
-            }
-
-            additionalSteeringAdjust = -0.1 * (degreesY - targetYAngle);
-            additionalSteeringAdjust = Math.min(additionalSteeringAdjust, 0.3);
-            if (additionalSteeringAdjust < 0.01) additionalSteeringAdjust = 0;
-            // if (distanceToTarget < targetDistance - distanceRange) {
-            //     //Robot too close to target, drive backwards!
-            //     additionalSteeringAdjust -= 0.15;
-            // }
-            // else if (distanceToTarget > targetDistance + distanceRange) {
-            //     //Robot too far from target, drive forwards!
-            //     additionalSteeringAdjust += 0.15;
-            // }
-            if (additionalSteeringAdjust < 0.1) {
-                //Achieved desired position!
-                inDesiredPosition = true;
-            }
-        }
-        
-        //Clamp speed to -0.3, 0.3
-        steering_adjust = Math.min(Math.max(steering_adjust, min), max);
-
-        //Resolve
-        leftMotors.set(steering_adjust + additionalSteeringAdjust);
-        rightMotors.set(-steering_adjust + additionalSteeringAdjust);
 
         double shooterSpeed = highShooterSpeed;
         if (inDesiredPosition && inDesiredAngle) {
