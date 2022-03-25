@@ -27,18 +27,21 @@ public class VisionAndShooter extends TeleopModule {
     private final int visionrange = 2;
     private final double turnSpeed = 0.16;
     private final double maxTurnSpeed = 0.3;
-    private final double limelightMountAngle = 25.0; //Gotta measure this...
-    private final double limelightHeightInches = 20.0; //Gotta measure this... (Inches)
-    private final double goalHeightInches = 60.0; //Gotta measure this... Goal to floor (Inches)
+    private final double limelightMountAngle = 25.0; //Gotta measure this... (NOT IMPORTANT RN)
+    private final double limelightHeightInches = 35.0; //Gotta measure this... (Inches)
+    private final double goalHeightInches = 102.8; //Middle of target to floor (Inches)
     private final double targetDistance = 80.0; //Gotta measure... target dist from robot to goal (Inches)
+    private final double targetYAngle = 5.0; //GOTTA FINE TUNE THIS
     private final double distanceRange = 5.0; //Margin of error (Inches)
+    private final double targetYAngleError = 1.0; //Marge of angle error (Inches)
+    //we need to measure all of these at the forge today rn they are just guesstimate lmao
 
     //Shooter & Turret vars
     private final double lowShooterSpeed = 0.3;
     private final double highShooterSpeed = 0.65;
     private final double second = 20;
     private final double startTransferDelay = second * 3;
-    private final double transferSpeed = 0.5;
+    private final double transferSpeed = 0.35;
     private double startTransferTimer = 0;
 
     public void teleopInit() {
@@ -50,6 +53,9 @@ public class VisionAndShooter extends TeleopModule {
             Container.get().frontLeftMotor,
             Container.get().backLeftMotor
         );
+        transferMotor1 = Container.get().transferMotor1;
+        transferMotor2 = Container.get().transferMotor2;
+        shooter = Container.get().shooter;
     }
 
     public void teleopControl() {
@@ -62,16 +68,7 @@ public class VisionAndShooter extends TeleopModule {
         }
 
         if (ControlSystems.get().mGamepadLeftBumper() == true) {
-            startTransferTimer++;
-            if (startTransferTimer > startTransferDelay) {
-                transferMotor1.set(transferSpeed);
-                transferMotor2.set(-transferSpeed);
-            } else {
-                transferMotor1.set(0);
-                transferMotor2.set(0);
-            }
             shooterSpeed = lowShooterSpeed;
-        } else if (ControlSystems.get().mGamepadRightBumper() == true) {
             startTransferTimer++;
             if (startTransferTimer > startTransferDelay) {
                 transferMotor1.set(transferSpeed);
@@ -80,14 +77,23 @@ public class VisionAndShooter extends TeleopModule {
                 transferMotor1.set(0);
                 transferMotor2.set(0);
             }
+        } else if (ControlSystems.get().mGamepadRightBumper() == true) {
             shooterSpeed = highShooterSpeed;
+            startTransferTimer++;
+            if (startTransferTimer > startTransferDelay) {
+                transferMotor1.set(transferSpeed);
+                transferMotor2.set(-transferSpeed);
+            } else {
+                transferMotor1.set(0);
+                transferMotor2.set(0);
+            }
         } else {
             startTransferTimer = 0;
         }
 
         //Driver vision turn and position
         if (ControlSystems.get().dGamepadLeftBumper() == true) {
-            update();
+            aimToTargetAndDrive();
             //everythingBagel();
         }
 
@@ -129,12 +135,12 @@ public class VisionAndShooter extends TeleopModule {
         return arr;
     }
 
-    public void update() {
+    public void aimToTargetAndDrive() {
         //Turn and drive to desired location
         double[] visionVals = updateVisionVals();
 
         double degreesX = visionVals[0]; //-29.8 to 29.8
-        double degreesY = visionVals[1]; //-24.85 to 24.85 (STATES COMPETITION)
+        double degreesY = visionVals[1]; //-24.85 to 24.85
         double distanceToTarget = visionVals[2];
         double targetInVision = visionVals[3];
 
@@ -147,7 +153,7 @@ public class VisionAndShooter extends TeleopModule {
         //Calculate steering_adjust
         if (targetInVision == 0) {
             //No target, turn robot until it finds one
-            steering_adjust = 0.3;
+            //steering_adjust = 0.3;
         } else {
             if (degreesX < -visionrange) {
                 //Target to the left
@@ -157,14 +163,18 @@ public class VisionAndShooter extends TeleopModule {
                 //Target to the right
                 steering_adjust = turnSpeed * (degreesX / speedDivideCoef) + min;
             }
-            if (distanceToTarget < targetDistance - distanceRange) {
-                //Robot too close to target, drive backwards!
-                additionalSteeringAdjust -= 0.15;
-            }
-            else if (distanceToTarget > targetDistance + distanceRange) {
-                //Robot too far from target, drive forwards!
-                additionalSteeringAdjust += 0.15;
-            }
+            
+            additionalSteeringAdjust = -0.1 * (degreesY - targetYAngle);
+            additionalSteeringAdjust = Math.min(additionalSteeringAdjust, 0.3);
+            if (additionalSteeringAdjust < 0.01) additionalSteeringAdjust = 0;
+            // if (distanceToTarget < targetDistance - distanceRange) {
+            //     //Robot too close to target, drive backwards!
+            //     additionalSteeringAdjust -= 0.15;
+            // }
+            // else if (distanceToTarget > targetDistance + distanceRange) {
+            //     //Robot too far from target, drive forwards!
+            //     additionalSteeringAdjust += 0.15;
+            // }
         }
         
         //Clamp speed to -0.3, 0.3
@@ -197,7 +207,7 @@ public class VisionAndShooter extends TeleopModule {
         //Calculate steering_adjust
         if (targetInVision == 0) {
             //No target, turn robot until it finds one
-            steering_adjust = 0.3;
+            //steering_adjust = 0.3;
         } else {
             if (degreesX < -visionrange) {
                 //Target to the left
@@ -210,15 +220,18 @@ public class VisionAndShooter extends TeleopModule {
                 inDesiredAngle = true;
             }
 
-            if (distanceToTarget < targetDistance - distanceRange) {
-                //Robot too close to target, drive backwards!
-                additionalSteeringAdjust -= 0.15;
-            }
-            else if (distanceToTarget > targetDistance + distanceRange) {
-                //Robot too far from target, drive forwards!
-                additionalSteeringAdjust += 0.15;
-            }
-            else {
+            additionalSteeringAdjust = -0.1 * (degreesY - targetYAngle);
+            additionalSteeringAdjust = Math.min(additionalSteeringAdjust, 0.3);
+            if (additionalSteeringAdjust < 0.01) additionalSteeringAdjust = 0;
+            // if (distanceToTarget < targetDistance - distanceRange) {
+            //     //Robot too close to target, drive backwards!
+            //     additionalSteeringAdjust -= 0.15;
+            // }
+            // else if (distanceToTarget > targetDistance + distanceRange) {
+            //     //Robot too far from target, drive forwards!
+            //     additionalSteeringAdjust += 0.15;
+            // }
+            if (additionalSteeringAdjust < 0.1) {
                 //Achieved desired position!
                 inDesiredPosition = true;
             }
