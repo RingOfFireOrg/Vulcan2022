@@ -3,7 +3,6 @@
  */
 
 package frc.robot;
-import java.util.ResourceBundle.Control;
 
 import com.revrobotics.CANSparkMax;
 
@@ -15,8 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Turret extends TeleopModule {
     
     CANSparkMax turret;
-    private final int visionrange = 2;
-    private final double turretMotorSpeed = 0.2;
+    // private final int visionrange = 2;
+    // private final double turretMotorSpeed = 0.2;
 
     public void teleopInit() {
         //turret = Container.get().turretMotor;

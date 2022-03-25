@@ -1,25 +1,15 @@
   
 package frc.robot;
 
-import com.ctre.phoenix.sensors.CANCoder;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
-import frc.robot.RobotMap;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 public class DriveTrain extends TeleopModule {
 
     MotorController leftMotors, rightMotors;
     LinearServo linear;
-    private RelativeEncoder rightEncoder;
     private double driveCoefficient;
-    private double motorCorrection; // leftEncoder;
+    private double motorCorrection;
     
     public DriveTrain() {
         rightMotors = new MotorControllerGroup(Container.get().frontRightMotor, Container.get().backRightMotor);

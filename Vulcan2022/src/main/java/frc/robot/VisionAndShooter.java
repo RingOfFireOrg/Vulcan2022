@@ -3,18 +3,13 @@ package frc.robot;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  
-import javax.swing.TransferHandler.TransferSupport;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionAndShooter extends TeleopModule {
     
@@ -23,17 +18,17 @@ public class VisionAndShooter extends TeleopModule {
     public CANSparkMax transferMotor1;
     public CANSparkMax transferMotor2;
     
-    //Vision vars
-    private final int visionrange = 2;
-    private final double turnSpeed = 0.16;
-    private final double maxTurnSpeed = 0.1;
-    private final double limelightMountAngle = 25.0; //Gotta measure this... (NOT IMPORTANT RN)
-    private final double limelightHeightInches = 35.0; //Gotta measure this... (Inches)
-    private final double goalHeightInches = 102.8; //Middle of target to floor (Inches)
-    private final double targetDistance = 80.0; //Gotta measure... target dist from robot to goal (Inches)
-    private final double targetYAngle = 5.0; //GOTTA FINE TUNE THIS
-    private final double distanceRange = 5.0; //Margin of error (Inches)
-    private final double targetYAngleError = 1.0; //Marge of angle error (Inches)
+    //Vision vars (keep these just in case...)
+    private final double visionrange = 1.5;
+    // private final double turnSpeed = 0.16;
+    // private final double maxTurnSpeed = 0.1;
+    // private final double limelightMountAngle = 25.0; //Gotta measure this... (NOT IMPORTANT RN)
+    // private final double limelightHeightInches = 35.0; //Gotta measure this... (Inches)
+    // private final double goalHeightInches = 102.8; //Middle of target to floor (Inches)
+    // private final double targetDistance = 80.0; //Gotta measure... target dist from robot to goal (Inches)
+    // private final double targetYAngle = 5.0; //GOTTA FINE TUNE THIS
+    // private final double distanceRange = 5.0; //Margin of error (Inches)
+    // private final double targetYAngleError = 1.0; //Marge of angle error (Inches)
     //we need to measure all of these at the forge today rn they are just guesstimate lmao
 
     //Shooter & Turret vars
@@ -121,9 +116,9 @@ public class VisionAndShooter extends TeleopModule {
         double targets = tv.getDouble(0.0);
 
         //Distance
-        double angleToGoalDegrees = limelightMountAngle + y;
-        double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
-        double limelightToGoalDistance = (goalHeightInches - limelightHeightInches) / Math.tan(angleToGoalRadians);
+        // double angleToGoalDegrees = limelightMountAngle + y;
+        // double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
+        // double limelightToGoalDistance = (goalHeightInches - limelightHeightInches) / Math.tan(angleToGoalRadians);
         
         //post to smart dashboard
         SmartDashboard.putNumber("LimelightX", x);
@@ -131,7 +126,7 @@ public class VisionAndShooter extends TeleopModule {
         SmartDashboard.putNumber("LimelightArea", area);
         SmartDashboard.putNumber("LimelightTarget", targets);
 
-        double[] arr = {x, y, limelightToGoalDistance, targets};
+        double[] arr = {x, y};
         return arr;
     }
 
@@ -146,10 +141,10 @@ public class VisionAndShooter extends TeleopModule {
         double heading_error = -tx;
         double steering_adjust = 0.0f;
 
-        if (tx > 1.0) {
+        if (tx > visionrange) {
             steering_adjust = KpAim*heading_error - min_aim;
         }
-        else if (tx < -1.0) {
+        else if (tx < -visionrange) {
             steering_adjust = KpAim*heading_error + min_aim;
         }
 
@@ -170,10 +165,10 @@ public class VisionAndShooter extends TeleopModule {
         double distance_error = -ty;
         double steering_adjust = 0.0f;
 
-        if (tx > 1.0) {
+        if (tx > visionrange) {
             steering_adjust = KpAim*heading_error - min_aim;
         }
-        else if (tx < -1.0) {
+        else if (tx < -visionrange) {
             steering_adjust = KpAim*heading_error + min_aim;
         }
 
@@ -199,10 +194,10 @@ public class VisionAndShooter extends TeleopModule {
         boolean inDesiredPosition = false;
         boolean inDesiredAngle = false;
 
-        if (tx > 1.0) {
+        if (tx > visionrange) {
             steering_adjust = KpAim*heading_error - min_aim;
         }
-        else if (tx < -1.0) {
+        else if (tx < -visionrange) {
             steering_adjust = KpAim*heading_error + min_aim;
         }
         else {

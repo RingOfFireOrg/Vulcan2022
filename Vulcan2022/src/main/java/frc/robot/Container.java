@@ -1,18 +1,10 @@
 package frc.robot; 
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
- 
-import javax.swing.TransferHandler.TransferSupport;
-
 import com.revrobotics.RelativeEncoder;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 

@@ -1,5 +1,4 @@
 package frc.robot;
-import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 
