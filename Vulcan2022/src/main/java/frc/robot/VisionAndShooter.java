@@ -137,8 +137,8 @@ public class VisionAndShooter extends TeleopModule {
 
     public void aimToTargetAndDrive() {
         double[] visionVals = getVisionVals();
-        double KpAim = -0.1f;
-        double KpDistance = -0.1f;
+        double KpAim = -0.07f;
+        double KpDistance = -0.07f;
         double min_aim = 0.05f;
 
         double tx = visionVals[0];
@@ -163,8 +163,8 @@ public class VisionAndShooter extends TeleopModule {
 
     public void everythingBagel() {
         double[] visionVals = getVisionVals();
-        double KpAim = -0.1f;
-        double KpDistance = -0.1f;
+        double KpAim = -0.07f;
+        double KpDistance = -0.07f;
         double min_aim = 0.05f;
 
         double tx = visionVals[0];
