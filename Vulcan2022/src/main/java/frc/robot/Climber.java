@@ -32,7 +32,7 @@ public class Climber {
             speedRight = 1;
         }
 
-        Container.get().climberLeft.set(speedLeft);
+        Container.get().climberLeft.set(-speedLeft);
         Container.get().climberRight.set(speedRight);
 
         if (ControlSystems.get().cGamepadA()) {

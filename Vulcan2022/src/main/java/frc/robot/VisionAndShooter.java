@@ -26,7 +26,7 @@ public class VisionAndShooter extends TeleopModule {
     //Vision vars
     private final int visionrange = 2;
     private final double turnSpeed = 0.16;
-    private final double maxTurnSpeed = 0.3;
+    private final double maxTurnSpeed = 0.1;
     private final double limelightMountAngle = 25.0; //Gotta measure this... (NOT IMPORTANT RN)
     private final double limelightHeightInches = 35.0; //Gotta measure this... (Inches)
     private final double goalHeightInches = 102.8; //Middle of target to floor (Inches)
@@ -135,7 +135,7 @@ public class VisionAndShooter extends TeleopModule {
         return arr;
     }
 
-    public void aimToTargetAndDrive() {
+    public void  aimToTargetAndDrive() {
         //Turn and drive to desired location
         double[] visionVals = updateVisionVals();
 
