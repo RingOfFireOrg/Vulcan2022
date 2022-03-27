@@ -71,13 +71,13 @@ public class Autonomous {
     }
 
     public void transferIn() {
-        Container.get().transferMotor1.set(0.5);
-        Container.get().transferMotor2.set(-0.5);
+        Container.get().transferMotor1.set(0.33);
+        Container.get().transferMotor2.set(-0.33);
     }
 
     public void transferOut() {
-        Container.get().transferMotor1.set(-0.5);
-        Container.get().transferMotor2.set(0.5);
+        Container.get().transferMotor1.set(-0.35);
+        Container.get().transferMotor2.set(0.35);
     }
 
     public void transferStop() {
@@ -125,7 +125,7 @@ public class Autonomous {
     }
 
     public void shootHigh() {
-        shooter.set(ControlMode.PercentOutput, .65);
+        shooter.set(ControlMode.PercentOutput, .59);
     }
 
     public void shooterStop() {
@@ -304,8 +304,20 @@ public class Autonomous {
                 }
                 case 4: {
                     //Vision
-                    if (timer < second * 3.5) {
-                        aimToTarget();
+                    if (timer < second * 4.5) {
+                        //aimToTarget();
+                        shootHigh();
+                        timer++;
+                    } else {
+                        autonomousStep++;
+                        reset();
+                    }
+                    break;
+
+                }
+                case 5: {
+                    if (timer < second * 1) {
+                        transferIn();
                         shootHigh();
                         timer++;
                     } else {
@@ -314,7 +326,19 @@ public class Autonomous {
                     }
                     break;
                 }
-                case 5: {
+                
+                case 6: {
+                    if (timer < second * 0.5) {
+                        transferOut();
+                        shootHigh();
+                        timer++;
+                    } else {
+                        autonomousStep++;
+                        reset();
+                    }
+                    break;
+                }
+                case 7: {
                     if (timer < second * 4.5) {
                         transferIn();
                         shootHigh();
@@ -325,7 +349,7 @@ public class Autonomous {
                     }
                     break;
                 }
-                case 6: {
+                case 8: {
                     shooterStop();
                     break;
                 }

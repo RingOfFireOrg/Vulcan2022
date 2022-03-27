@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -17,9 +18,11 @@ public class VisionAndShooter extends TeleopModule {
     public TalonFX shooter;
     public CANSparkMax transferMotor1;
     public CANSparkMax transferMotor2;
+    public VictorSP intakeMotor;
     
     //Vision vars (keep these just in case...)
     private final double visionrange = 1.5;
+    private final double target_height = -21; //Tape to limelight's crosshair percent
     // private final double turnSpeed = 0.16;
     // private final double maxTurnSpeed = 0.1;
     // private final double limelightMountAngle = 25.0; //Gotta measure this... (NOT IMPORTANT RN)
@@ -31,13 +34,14 @@ public class VisionAndShooter extends TeleopModule {
     // private final double targetYAngleError = 1.0; //Marge of angle error (Inches)
     //we need to measure all of these at the forge today rn they are just guesstimate lmao
 
-    //Shooter & Turret vars
+    //Shooter, Turret, and Intake vars
     private final double lowShooterSpeed = 0.3;
-    private final double highShooterSpeed = 0.65;
+    private final double highShooterSpeed = 0.57;
     private final double second = 20;
     private final double startTransferDelay = second * 3;
     private final double transferSpeed = 0.4;
     private double startTransferTimer = 0;
+    private double intakeSpeed = 1;
 
     public void teleopInit() {
         rightMotors = new MotorControllerGroup(
@@ -51,6 +55,7 @@ public class VisionAndShooter extends TeleopModule {
         transferMotor1 = Container.get().transferMotor1;
         transferMotor2 = Container.get().transferMotor2;
         shooter = Container.get().shooter;
+        intakeMotor = Container.get().intakeMotor;
     }
 
     public void teleopControl() {
@@ -68,8 +73,10 @@ public class VisionAndShooter extends TeleopModule {
 
             if (startTransferTimer > startTransferDelay) {
                 transferIn();
+                intakeMotor.set(intakeSpeed);
             } else {
                 transferStop();
+                intakeMotor.set(0);
             }
         } else if (ControlSystems.get().mGamepadRightBumper() == true) {
             shooterSpeed = highShooterSpeed;
@@ -77,8 +84,10 @@ public class VisionAndShooter extends TeleopModule {
             
             if (startTransferTimer > startTransferDelay) {
                 transferIn();
+                intakeMotor.set(intakeSpeed);
             } else {
                 transferStop();
+                intakeMotor.set(0);
             }
         } else {
             startTransferTimer = 0;
@@ -133,12 +142,12 @@ public class VisionAndShooter extends TeleopModule {
     
     public void aimToTarget() {
         double[] visionVals = getVisionVals();
-        double KpAim = -0.07f;
+        double KpAim = 0.07f;
         double min_aim = 0.05f;
 
         double tx = visionVals[0];
 
-        double heading_error = -tx;
+        double heading_error = tx;
         double steering_adjust = 0.0f;
 
         if (tx > visionrange) {
@@ -154,15 +163,15 @@ public class VisionAndShooter extends TeleopModule {
 
     public void aimToTargetAndDrive() {
         double[] visionVals = getVisionVals();
-        double KpAim = -0.07f;
-        double KpDistance = -0.07f;
+        double KpAim = 0.07f;
+        double KpDistance = 0.07f;
         double min_aim = 0.05f;
 
         double tx = visionVals[0];
         double ty = visionVals[1];
 
-        double heading_error = -tx;
-        double distance_error = -ty;
+        double heading_error = tx;
+        double distance_error = ty;
         double steering_adjust = 0.0f;
 
         if (tx > visionrange) {
@@ -172,23 +181,34 @@ public class VisionAndShooter extends TeleopModule {
             steering_adjust = KpAim*heading_error + min_aim;
         }
 
-        double distance_adjust = KpDistance * distance_error;
+        double distance_adjust = KpDistance * (distance_error + target_height);
 
-        leftMotors.set(steering_adjust + distance_adjust);
-        rightMotors.set(-steering_adjust + distance_adjust);
+        double leftSpeed = steering_adjust + distance_adjust;
+        double rightSpeed = -steering_adjust + distance_adjust;
+
+        if (leftSpeed < -0.8 || rightSpeed < -0.8 || leftSpeed > 0.8 || rightSpeed > 0.8) {
+            leftSpeed /= 1.2;
+            rightSpeed /= 1.2;
+        }
+
+        leftSpeed /= 1.4;
+        rightSpeed /= 1.4;
+
+        leftMotors.set(leftSpeed);
+        rightMotors.set(rightSpeed);
     }
 
     public void everythingBagel() {
         double[] visionVals = getVisionVals();
         double KpAim = -0.07f;
-        double KpDistance = -0.07f;
+        double KpDistance = 0.07f;
         double min_aim = 0.05f;
 
         double tx = visionVals[0];
         double ty = visionVals[1];
 
         double heading_error = -tx;
-        double distance_error = -ty;
+        double distance_error = ty;
         double steering_adjust = 0.0f;
 
         boolean inDesiredPosition = false;
@@ -204,7 +224,7 @@ public class VisionAndShooter extends TeleopModule {
             inDesiredAngle = true;
         }
 
-        double distance_adjust = KpDistance * distance_error;
+        double distance_adjust = KpDistance * (distance_error + target_height);
         if (distance_adjust < 0.05) {
             inDesiredPosition = true;
         }
