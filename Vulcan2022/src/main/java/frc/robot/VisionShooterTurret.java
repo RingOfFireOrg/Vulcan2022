@@ -12,13 +12,14 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-public class VisionAndShooter extends TeleopModule {
+public class VisionShooterTurret extends TeleopModule {
     
     private MotorControllerGroup leftMotors, rightMotors;
     public TalonFX shooter;
     public CANSparkMax transferMotor1;
     public CANSparkMax transferMotor2;
     public VictorSP intakeMotor;
+    CANSparkMax turret;
     
     //Vision vars (keep these just in case...)
     private final double visionrange = 1.5;
@@ -56,6 +57,7 @@ public class VisionAndShooter extends TeleopModule {
         transferMotor2 = Container.get().transferMotor2;
         shooter = Container.get().shooter;
         intakeMotor = Container.get().intakeMotor;
+        turret = Container.get().turretMotor;
     }
 
     public void teleopControl() {
@@ -101,7 +103,7 @@ public class VisionAndShooter extends TeleopModule {
             //everythingBagelOld();
         }
 
-        Container.get().shooter.set(ControlMode.PercentOutput, shooterSpeed);
+        shooter.set(ControlMode.PercentOutput, shooterSpeed);
     }
 
     public double[] getVisionVals() {
@@ -139,6 +141,44 @@ public class VisionAndShooter extends TeleopModule {
         return arr;
     }
 
+    public void turretToTarget() {
+        //Read vision values
+        double[] visionVals = getVisionVals();
+
+        //Turret
+        double tx = visionVals[0]; // +-29.8
+        double turret_speed = tx / 10; //Adjust!
+
+        turret_speed = Math.min(0.4, turret_speed);
+        turret_speed = Math.max(-0.4, turret_speed);
+
+        turret.set(turret_speed);
+    }
+
+    public void turretAndShootToTarget() {
+        //Read vision values
+        double[] visionVals = getVisionVals();
+        
+        //Turret
+        double tx = visionVals[0]; // +-29.8
+        double turret_speed = tx / 10; //Adjust! ADJUST!
+
+        turret_speed = Math.min(0.4, turret_speed);
+        turret_speed = Math.max(-0.4, turret_speed);
+        
+        turret.set(turret_speed);
+
+        //Shooter
+        if (Math.abs(turret_speed) > 0.04) return;
+        
+        double ty = -visionVals[1]; // +-24.85
+        double target_ty = -target_height; //base, -21.xx (Adjust);
+        double shooter_base_speed = highShooterSpeed; //Working and tested speed from base
+        double shooter_adjust_rate = 0.05; //How sensitive shooter is to distance
+        double shooter_speed_adjust = ((ty - target_ty) * -1) / shooter_adjust_rate;
+
+        shooter.set(ControlMode.PercentOutput, shooter_base_speed + shooter_speed_adjust);
+    }
     
     public void aimToTarget() {
         double[] visionVals = getVisionVals();
@@ -244,7 +284,7 @@ public class VisionAndShooter extends TeleopModule {
             startTransferTimer = 0;
         }
 
-        Container.get().shooter.set(ControlMode.PercentOutput, shooterSpeed);
+        shooter.set(ControlMode.PercentOutput, shooterSpeed);
     }
 
     public void transferIn() {

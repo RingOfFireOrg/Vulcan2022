@@ -16,28 +16,25 @@ public class Robot extends TimedRobot {
 
   protected DriveTrain driveTrain;
   protected Autonomous autonomous;
-  //protected Turret turret;
   protected Climber climber;
   protected Transfer transfer;
   protected Intake intake;
-  protected VisionAndShooter visionShooter;
+  protected VisionShooterTurret visionShooterTurret;
   
   @Override
   public void robotInit() {
     driveTrain = new DriveTrain();
     autonomous = new Autonomous();
-    //turret = new Turret();
     climber = new Climber();
     transfer = new Transfer();
     intake = new Intake();
-    visionShooter = new VisionAndShooter();
+    visionShooterTurret = new VisionShooterTurret();
 
     driveTrain.teleopInit();
-    //turret.teleopInit();
     climber.teleopInit();
     transfer.teleopInit();
     intake.teleopInit();
-    visionShooter.teleopInit();
+    visionShooterTurret.teleopInit();
 
     UsbCamera camera = CameraServer.startAutomaticCapture();
     camera.setResolution(640, 480);
@@ -59,11 +56,10 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     driveTrain.teleopControl();
-    //turret.teleopControl();
     climber.teleopControl();
     transfer.teleopControl();
     intake.teleopControl();
-    visionShooter.teleopControl();
+    visionShooterTurret.teleopControl();
     
     //subscribe to meldrop
     //drop at tilted towers
