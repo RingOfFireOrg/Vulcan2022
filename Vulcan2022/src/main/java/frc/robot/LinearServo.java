@@ -61,7 +61,7 @@ servo
 updateCurPos()} periodically
  * @return true when servo is at its target
  */
-public boolean isFinished(){
+  public boolean isFinished(){
     return curPos == setPos;
-    }
+  }
 }

@@ -1,55 +1,61 @@
 package frc.robot;
 
-import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.revrobotics.CANSparkMax;
+
+import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 
 public class Climber {
       
     CANSparkMax climberLeft;
     CANSparkMax climberRight;
+    VictorSP winchMotor;
+    VictorSP winchMotorTwo;
 
     public void teleopInit() {
         climberLeft = Container.get().climberLeft;
         climberRight = Container.get().climberRight;
+        winchMotor = Container.get().winchMotor;
+        winchMotorTwo = Container.get().winchMotorTwo;
     }
 
     public void teleopControl() {
-        double speedRight = ControlSystems.get().cGamepadLeftY();
+        double speedRight = Controllers.get().cGamepadLeftY();
         if (speedRight > -0.1 && speedRight < 0.1) {
             speedRight = 0;
         }
 
-        double speedLeft = ControlSystems.get().cGamepadRightY();
+        double speedLeft = Controllers.get().cGamepadRightY();
         if (speedLeft > -0.1 && speedLeft < 0.1) {
             speedLeft = 0;
         }
 
-        if (ControlSystems.get().cGamepadX()) {
+        if (Controllers.get().cGamepadX()) {
             speedLeft = -1;
             speedRight = -1;
         }
-        if (ControlSystems.get().cGamepadY()) {
+        if (Controllers.get().cGamepadY()) {
             speedLeft = 1;
             speedRight = 1;
         }
 
-        Container.get().climberLeft.set(speedLeft);
-        Container.get().climberRight.set(speedRight);
-
-        if (ControlSystems.get().cGamepadA()) {
-            Container.get().winchMotor.set(1);
-        } else if (ControlSystems.get().cGamepadB()){
-            Container.get().winchMotor.set(-1);
-        } else {
-            Container.get().winchMotor.set(0);
-        }
+        climberLeft.set(speedLeft);
+        climberRight.set(speedRight);
 
         double winchSpeed = 0;
-        if (ControlSystems.get().cGamepadPov() == "up") {
-            winchSpeed = 0.8;
-        } else if (ControlSystems.get().cGamepadPov() == "down") {
-            winchSpeed = -0.8;
+        if (Controllers.get().cGamepadA()) {
+            winchSpeed = 1;
+        } else if (Controllers.get().cGamepadB()){
+            winchSpeed = -1;
         }
-        Container.get().winchMotorTwo.set(winchSpeed);
+        
+        winchMotor.set(winchSpeed);
+
+        double winch2Speed = 0;
+        if (Controllers.get().cGamepadPov() == "up") {
+            winch2Speed = 0.8;
+        } else if (Controllers.get().cGamepadPov() == "down") {
+            winch2Speed = -0.8;
+        }
+        winchMotorTwo.set(winch2Speed);
     }
 }

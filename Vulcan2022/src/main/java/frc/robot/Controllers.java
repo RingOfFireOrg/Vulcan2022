@@ -3,19 +3,15 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 
-public class ControlSystems {
+public class Controllers {
     
-    private static ControlSystems thetrueControlSystem;
-    // Joystick rightstick;
-    // Joystick leftstick;
+    private static Controllers thetrueControlSystem;
     Joystick manipulatorStick;
     XboxController driverController;
     XboxController manipulatorController;
     XboxController climberController;
 
-    public ControlSystems() {
-        // rightstick = new Joystick(0);
-        // leftstick = new Joystick(1);
+    public Controllers() {
         manipulatorController = new XboxController(2);
         driverController = new XboxController(3);
         climberController = new XboxController(4);
@@ -117,13 +113,10 @@ public class ControlSystems {
         return climberController.getRawButton(4);
     }
 
-    public static ControlSystems get() {
-        if (thetrueControlSystem != null) {
-            return thetrueControlSystem;
-        }                   
-        else {
-            thetrueControlSystem = new ControlSystems();
-            return thetrueControlSystem;
-        }
+    public static Controllers get() {
+        if (thetrueControlSystem != null) return thetrueControlSystem;
+
+        thetrueControlSystem = new Controllers();
+        return thetrueControlSystem;
     }
 }

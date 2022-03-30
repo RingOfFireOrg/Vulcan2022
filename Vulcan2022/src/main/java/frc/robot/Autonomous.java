@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 public class Autonomous {
     private MotorControllerGroup leftMotors, rightMotors; 
     public TalonFX shooter;
-    //private CANSparkMax turret;
     private AHRS ahrs;
 
     private double driveOffset = 3;
@@ -43,7 +42,6 @@ public class Autonomous {
 
         shooter = Container.get().shooter;
         ahrs = Container.get().ahrs;
-        //turret = Container.get().turretMotor;
     }
     
     public double getLeftEncoderDistance() {
@@ -132,18 +130,6 @@ public class Autonomous {
         shooter.set(ControlMode.PercentOutput, 0);
     }
 
-    // public void turretRight() {
-    //     turret.set(0.15);
-    // }
-
-    // public void turretLeft() {
-    //     turret.set(-0.15);
-    // }
-
-    // public void turretStop() {
-    //     turret.set(0);
-    // }
-
     public float getAbsoluteDirection() {
         return ahrs.getYaw();
     }
@@ -224,7 +210,6 @@ public class Autonomous {
         driveStop();
         resetEncoders();
         shooterStop();
-        //turretStop();
         intakeStop();
         timer = 0;
     }
@@ -405,88 +390,5 @@ public class Autonomous {
                 }
             }
         }
-        
-        /*else {
-            switch (autonomousStep) {
-                case 0: {
-                    reset(); 
-                    autonomousStep++;
-                    break;
-                }
-                case 1: {
-                    //shoot 1 ball
-                    if (timer < second * 2.5) {
-                        shoot();
-                        timer++;
-                    } else if (timer < second * 3.5) {
-                        shoot();
-                        transferIn();
-                        timer++;
-                    } else {
-                        autonomousStep++;
-                        reset();
-                    }
-                    break;
-                }
-                case 2: {
-                    //turn the robot 90 degrees
-                    turn("right", 90);
-                    break;
-                }
-                case 3: {
-                    intakeIn();
-                    drive("forward", FEET * 9.34);
-                    break;
-                }
-                case 4: {
-                    //turn("left", 122.25);
-                    if (getAbsoluteDirection() < 180 - turnOffset) {
-                        turnRight();
-                    } else if (getAbsoluteDirection() < -122.25 + turnOffset) {
-                        turnRight();
-                    } else {
-                        reset();
-                    }
-
-                    if (timer < second) {
-                        turretRight();
-                        timer++;
-                    }
-
-                    break;
-                }
-                case 5: {
-                    drive("forward", FEET * 14.2);
-                    intakeIn();
-                    break;
-                }
-                case 6: {
-                    turn("right", 12.96);
-                    break;
-                }
-                case 7: {
-                    drive("forward", FEET * 3);
-                    break;
-                }
-                case 8: {
-                    //shoot 2 balls
-                    if (timer < second * 2.5) {
-                        shoot();
-                        timer++;
-                    } else if (timer < second * 4.5) {
-                        shoot();
-                        transferIn();
-                        timer++;
-                    } else {
-                        autonomousStep++;
-                        reset();
-                    }
-                    break;
-                }
-                default: {
-                    break;
-                }
-            };
-        } */
     }
 }

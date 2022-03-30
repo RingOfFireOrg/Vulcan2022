@@ -12,9 +12,10 @@ public class Intake {
     }
 
     public void teleopControl() {
-        if (ControlSystems.get().mGamepadA()) { //In
+        
+        if (Controllers.get().mGamepadA()) { //In
             intakeMotor.set(intakeSpeed);
-        } else if (ControlSystems.get().mGamepadB()) { //Out
+        } else if (Controllers.get().mGamepadB()) { //Out
             intakeMotor.set(-intakeSpeed);
         } else {
             intakeMotor.set(0);

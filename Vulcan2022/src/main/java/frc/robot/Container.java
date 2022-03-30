@@ -58,7 +58,7 @@ public class Container {
         transferMotor2 = new CANSparkMax(12, MotorType.kBrushless);
 
         shooter = new TalonFX(6);
-//nice
+
         //turretMotor = new CANSparkMax(RobotMap.TURRET_SPINNER, MotorType.kBrushless);
 
         ahrs = new AHRS(SerialPort.Port.kUSB);
@@ -74,12 +74,9 @@ public class Container {
     }
 
     public static Container get() {
-        if (theTrueContainer != null) {
-            return theTrueContainer;
-        }                   
-        else {
-            theTrueContainer = new Container();
-            return theTrueContainer;
-        }
+        if (theTrueContainer != null) return theTrueContainer;
+
+        theTrueContainer = new Container();
+        return theTrueContainer;
     }
 }

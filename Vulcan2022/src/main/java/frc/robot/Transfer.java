@@ -13,10 +13,10 @@ public class Transfer {
     }
 
     public void teleopControl() {           
-        if (ControlSystems.get().mGamepadX()) { //In
+        if (Controllers.get().mGamepadX()) { //In
             transferMotor1.set(transferSpeed);
             transferMotor2.set(-transferSpeed);
-        } else if (ControlSystems.get().mGamepadY()) { //Out
+        } else if (Controllers.get().mGamepadY()) { //Out
             transferMotor1.set(-transferSpeed);
             transferMotor2.set(transferSpeed);
         } else { //Stop
