@@ -137,7 +137,7 @@ public class VisionShooterTurret extends TeleopModule {
         double tx = visionVals[0]; // +-29.8
         double turret_speed = tx / 10; //Adjust!
 
-        turret_speed = Math.min(Math.max(turret_speed, -0.4), 0.4);
+        turret_speed = Math.min(Math.max(turret_speed, -0.1), 0.1);
         turret.set(turret_speed);
     }
 
