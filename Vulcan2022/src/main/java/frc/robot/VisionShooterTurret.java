@@ -131,13 +131,18 @@ public class VisionShooterTurret extends TeleopModule {
     public void turretToTarget() {
         //Read vision values
         double[] visionVals = getVisionVals();
+
+        //If no target, exit function
         if (visionVals[2] == 0) return;
 
-        //Turret
-        double tx = visionVals[0]; // +-29.8
-        double turret_speed = tx / 10; //Adjust!
+        //Turret speed
+        double tx = visionVals[0]; //Horizontal Offset From Crosshair To Target (-29.8 to 29.8deg)
+        double turret_speed = tx / 29.8; //Turret speed
 
+        //Clamp speed between -0.1 and 0.1
         turret_speed = Math.min(Math.max(turret_speed, -0.1), 0.1);
+
+        //Set turret motor to turret speed
         turret.set(turret_speed);
     }
 
@@ -148,9 +153,9 @@ public class VisionShooterTurret extends TeleopModule {
         
         //Turret
         double tx = visionVals[0]; // +-29.8
-        double turret_speed = tx / 10; //Change! ADJUST!
+        double turret_speed = tx / 29.8; //Change! ADJUST!
 
-        turret_speed = Math.min(Math.max(turret_speed, -0.4), 0.4);
+        turret_speed = Math.min(Math.max(turret_speed, -0.1), 0.1);
         turret.set(turret_speed);
 
         //Shooter
