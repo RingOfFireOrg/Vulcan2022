@@ -97,6 +97,9 @@ public class VisionShooterTurret extends TeleopModule {
         SmartDashboard.putNumber("LimelightArea", area);
         SmartDashboard.putNumber("LimelightTarget", targets);
 
+        SmartDashboard.putBoolean("In range and pointed at target", Math.abs(x) < 0.04);
+        SmartDashboard.putBoolean("In range", targets == 1);
+        
         double[] arr = {x, y, targets};
         return arr;
     }
