@@ -5,6 +5,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 
@@ -25,6 +27,8 @@ public class Container {
     public CANSparkMax transferMotor2;
     public TalonFX shooter;
     public CANSparkMax turretMotor;
+    public DigitalInput rightLimitSwitch;
+    public DigitalInput leftLimitSwitch;
 
     public AHRS ahrs;
 
@@ -60,6 +64,9 @@ public class Container {
         shooter = new TalonFX(6);
 
         turretMotor = new CANSparkMax(RobotMap.TURRET_SPINNER, MotorType.kBrushless);
+
+        rightLimitSwitch = new DigitalInput(1);
+        leftLimitSwitch = new DigitalInput(2);
 
         ahrs = new AHRS(SerialPort.Port.kUSB);
         ahrs.reset();

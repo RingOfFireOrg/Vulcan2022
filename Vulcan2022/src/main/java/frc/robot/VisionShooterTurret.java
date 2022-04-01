@@ -1,5 +1,6 @@
 package frc.robot; 
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  
@@ -16,14 +17,14 @@ public class VisionShooterTurret extends TeleopModule {
     
     private MotorControllerGroup leftMotors, rightMotors;
     public TalonFX shooter;
-    public CANSparkMax transferMotor1;
-    public CANSparkMax transferMotor2;
+    public CANSparkMax transferMotor1, transferMotor2;
     public VictorSP intakeMotor;
     CANSparkMax turret;
+    DigitalInput leftLimitSwitch, rightLimitSwitch;
     
     //Important Vision Vars
     private final double visionrange = 1.5;
-    private final double target_height = -21; //Tape to limelight's crosshair percent (reversed)
+    private final double target_height = 21; //Tape to limelight's crosshair percent
 
     //Shooter, Turret, and Intake vars
     private final double lowShooterSpeed = 0.3;
@@ -33,6 +34,7 @@ public class VisionShooterTurret extends TeleopModule {
     private final double transferSpeed = 0.4;
     private double startTransferTimer = 0;
     private double intakeSpeed = 1;
+    private boolean kill_turret = false;
 
     public void teleopInit() {
         rightMotors = new MotorControllerGroup(
@@ -48,6 +50,8 @@ public class VisionShooterTurret extends TeleopModule {
         shooter = Container.get().shooter;
         intakeMotor = Container.get().intakeMotor;
         turret = Container.get().turretMotor;
+        leftLimitSwitch = Container.get().leftLimitSwitch;
+        rightLimitSwitch = Container.get().rightLimitSwitch;
     }
 
     public void teleopControl() {
@@ -58,7 +62,11 @@ public class VisionShooterTurret extends TeleopModule {
         if (Controllers.get().dGamepadLeftBumper() == true) {
             turretToTarget();
             //turretAndShootToTarget();
+        } else {
+            turret.set(0);
         }
+
+        if (kill_turret) turret.set(0);
     }
 
     public double[] getVisionVals() {
@@ -137,10 +145,18 @@ public class VisionShooterTurret extends TeleopModule {
 
         //Turret speed
         double tx = visionVals[0]; //Horizontal Offset From Crosshair To Target (-29.8 to 29.8deg)
-        double turret_speed = tx / 29.8; //Turret speed
+        double turret_speed = tx / 40; //Turret speed
 
         //Clamp speed between -0.1 and 0.1
         turret_speed = Math.min(Math.max(turret_speed, -0.1), 0.1);
+
+        //Clamp speed w/ limit switches
+        if (rightLimitSwitch.get()) {
+            turret_speed = Math.min(turret_speed, 0); //Only negative speeds
+        }
+        if (leftLimitSwitch.get()) {
+            turret_speed = Math.max(turret_speed, 0); //Only postive speeds
+        }
 
         //Set turret motor to turret speed
         turret.set(turret_speed);
@@ -149,28 +165,43 @@ public class VisionShooterTurret extends TeleopModule {
     public void turretAndShootToTarget() {
         //Read vision values
         double[] visionVals = getVisionVals();
+
+        //If no target, exit function
         if (visionVals[2] == 0) return;
         
-        //Turret
+        //Turret speed
         double tx = visionVals[0]; // +-29.8
-        double turret_speed = tx / 29.8; //Change! ADJUST!
+        double turret_speed = tx / 40; //Change! ADJUST!
 
+        //Clamp speed between -0.1 and 0.1
         turret_speed = Math.min(Math.max(turret_speed, -0.1), 0.1);
+
+        //Clamp speed w/ limit switches
+        if (rightLimitSwitch.get()) {
+            turret_speed = Math.min(turret_speed, 0); //Only negative speeds
+        }
+        if (leftLimitSwitch.get()) {
+            turret_speed = Math.max(turret_speed, 0); //Only postive speeds
+        }
+
+        //Set turret motor to turret speed
         turret.set(turret_speed);
 
-        //Shooter
+        //Shooter - If the turret isn't facing the target then exit function
         if (Math.abs(turret_speed) > 0.04) return;
         
         double ty = -visionVals[1]; // +-24.85
-        double target_ty = -target_height; //base, -21.xx (ADJUST);
-        double shooter_base_speed = highShooterSpeed; //Working and tested speed from base
-        double shooter_adjust_rate = 0.05; //How sensitive shooter is to distance
-        double shooter_speed_adjust = ((ty - target_ty) * -1) / shooter_adjust_rate;
+        double target_ty = target_height; //base, -21.xx (ADJUST ADJUST CHANGE IT);
+        double shooter_base_speed = highShooterSpeed; //Working speed from target_height location
+        double shooter_adjust_rate = 0.05; //How sensitive shooter speed is to distance
+        double shooter_speed_adjust = ((ty - target_ty) * -1) / shooter_adjust_rate; //Calculate
 
-        shooter.set(ControlMode.PercentOutput, shooter_base_speed + shooter_speed_adjust);
+        //Set shooter motor to shooter speed
+        double shooter_speed = shooter_base_speed + shooter_speed_adjust;
+        shooter.set(ControlMode.PercentOutput, shooter_speed);
     }
     
-    public void aimToTarget() {
+    public void turnToTarget() {
         double[] visionVals = getVisionVals();
         double KpAim = 0.07f;
         double min_aim = 0.05f;
@@ -191,7 +222,7 @@ public class VisionShooterTurret extends TeleopModule {
         rightMotors.set(-steering_adjust);
     }
 
-    public void aimToTargetAndDrive() {
+    public void turnToTargetAndDrive() {
         double[] visionVals = getVisionVals();
         double KpAim = 0.07f;
         double KpDistance = 0.07f;
@@ -211,7 +242,7 @@ public class VisionShooterTurret extends TeleopModule {
             steering_adjust = KpAim*heading_error + min_aim;
         }
 
-        double distance_adjust = KpDistance * (distance_error + target_height);
+        double distance_adjust = KpDistance * (distance_error - target_height);
 
         double leftSpeed = steering_adjust + distance_adjust;
         double rightSpeed = -steering_adjust + distance_adjust;
@@ -254,7 +285,7 @@ public class VisionShooterTurret extends TeleopModule {
             inDesiredAngle = true;
         }
 
-        double distance_adjust = KpDistance * (distance_error + target_height);
+        double distance_adjust = KpDistance * (distance_error - target_height);
         if (distance_adjust < 0.05) {
             inDesiredPosition = true;
         }
