@@ -35,6 +35,7 @@ public class VisionShooterTurret extends TeleopModule {
     private double startTransferTimer = 0;
     private double intakeSpeed = 1;
     private boolean kill_turret = false;
+    private double shooter_running_time = 0;
 
     public void teleopInit() {
         rightMotors = new MotorControllerGroup(
@@ -64,6 +65,7 @@ public class VisionShooterTurret extends TeleopModule {
             //turretAndShootToTarget();
         } else {
             turret.set(0);
+            shooter_running_time = 0;
         }
 
         if (kill_turret) turret.set(0);
@@ -187,9 +189,7 @@ public class VisionShooterTurret extends TeleopModule {
         //Set turret motor to turret speed
         turret.set(turret_speed);
 
-        //Shooter - If the turret isn't facing the target then exit function
-        if (Math.abs(turret_speed) > 0.04) return;
-        
+        //Shooter - Calculate speed
         double ty = -visionVals[1]; // +-24.85
         double target_ty = target_height; //base, -21.xx (ADJUST ADJUST CHANGE IT);
         double shooter_base_speed = highShooterSpeed; //Working speed from target_height location
@@ -199,6 +199,17 @@ public class VisionShooterTurret extends TeleopModule {
         //Set shooter motor to shooter speed
         double shooter_speed = shooter_base_speed + shooter_speed_adjust;
         shooter.set(ControlMode.PercentOutput, shooter_speed);
+        shooter_running_time++;
+
+        //If turret isn't aiming at target then exit function
+        if (Math.abs(turret_speed) > 0.04) return;
+
+        //Run transfer if the shooter has ran for long enough
+        if (shooter_running_time > startTransferDelay) {
+            transferIn();
+        } else {
+            transferStop();
+        } 
     }
     
     public void turnToTarget() {
