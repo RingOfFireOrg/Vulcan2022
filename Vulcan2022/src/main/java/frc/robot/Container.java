@@ -29,6 +29,7 @@ public class Container {
     public CANSparkMax turretMotor;
     public DigitalInput rightLimitSwitch;
     public DigitalInput leftLimitSwitch;
+    public RelativeEncoder turretEncoder;
 
     public AHRS ahrs;
 
@@ -64,6 +65,7 @@ public class Container {
         shooter = new TalonFX(6);
 
         turretMotor = new CANSparkMax(RobotMap.TURRET_SPINNER, MotorType.kBrushless);
+        turretEncoder = turretMotor.getEncoder();
 
         rightLimitSwitch = new DigitalInput(1);
         leftLimitSwitch = new DigitalInput(2);

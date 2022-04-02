@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -21,10 +23,11 @@ public class VisionShooterTurret extends TeleopModule {
     public VictorSP intakeMotor;
     CANSparkMax turret;
     DigitalInput leftLimitSwitch, rightLimitSwitch;
+    RelativeEncoder turretEncoder;
     
     //Important Vision Vars
     private final double visionrange = 1.5;
-    private final double target_height = 21; //Tape to limelight's crosshair percent
+    private final double targetHeight = 21; //Tape to limelight's crosshair percent
 
     //Shooter, Turret, and Intake vars
     private final double lowShooterSpeed = 0.3;
@@ -32,9 +35,11 @@ public class VisionShooterTurret extends TeleopModule {
     private final double second = 20;
     private final double startTransferDelay = second * 3;
     private final double transferSpeed = 0.33;
+    private final double turretEncoderRange = 10;
+    private final double turretErrorRange = 1;
     private double startTransferTimer = 0;
     private double intakeSpeed = 1;
-    private boolean kill_turret = false;
+    private boolean killTurret = false;
     private double shooter_running_time = 0;
 
     public void teleopInit() {
@@ -53,6 +58,7 @@ public class VisionShooterTurret extends TeleopModule {
         turret = Container.get().turretMotor;
         leftLimitSwitch = Container.get().leftLimitSwitch;
         rightLimitSwitch = Container.get().rightLimitSwitch;
+        turretEncoder = Container.get().turretEncoder;
     }
 
     public void teleopControl() {
@@ -64,11 +70,17 @@ public class VisionShooterTurret extends TeleopModule {
             turretToTarget();
             //turretAndShootToTarget();
         } else {
-            turret.set(0);
+            if (turretEncoder.getPosition() < -turretErrorRange) {
+                turret.set(0.05);
+            } else if (turretEncoder.getPosition() > turretErrorRange) {
+                turret.set(-0.05);
+            } else {
+                turret.set(0);
+            }
             shooter_running_time = 0;
         }
 
-        if (kill_turret) turret.set(0);
+        if (killTurret) turret.set(0);
     }
 
     public double[] getVisionVals() {
@@ -160,11 +172,11 @@ public class VisionShooterTurret extends TeleopModule {
         //Clamp speed between -0.1 and 0.1
         turret_speed = Math.min(Math.max(turret_speed, -0.1), 0.1);
 
-        //Clamp speed w/ limit switches
-        if (rightLimitSwitch.get()) {
+        //Clamp speed w/ encoder
+        if (turretEncoder.getPosition() > turretEncoderRange) {
             turret_speed = Math.min(turret_speed, 0); //Only negative speeds
         }
-        if (leftLimitSwitch.get()) {
+        if (turretEncoder.getPosition() < -turretEncoderRange) {
             turret_speed = Math.max(turret_speed, 0); //Only postive speeds
         }
 
@@ -188,11 +200,11 @@ public class VisionShooterTurret extends TeleopModule {
         //Clamp speed between -0.1 and 0.1
         turret_speed = Math.min(Math.max(turret_speed, -0.1), 0.1);
 
-        //Clamp speed w/ limit switches
-        if (rightLimitSwitch.get()) {
+        //Clamp speed w/ encoder
+        if (turretEncoder.getPosition() > turretEncoderRange) {
             turret_speed = Math.min(turret_speed, 0); //Only negative speeds
         }
-        if (leftLimitSwitch.get()) {
+        if (turretEncoder.getPosition() < -turretEncoderRange) {
             turret_speed = Math.max(turret_speed, 0); //Only postive speeds
         }
 
@@ -204,8 +216,8 @@ public class VisionShooterTurret extends TeleopModule {
 
         //Shooter - Calculate speed
         double ty = -visionVals[1]; // +-24.85
-        double target_ty = target_height; //base, -21.xx (ADJUST ADJUST CHANGE IT);
-        double shooter_base_speed = highShooterSpeed; //Working speed from target_height location
+        double target_ty = targetHeight; //base, -21.xx (ADJUST ADJUST CHANGE IT);
+        double shooter_base_speed = highShooterSpeed; //Working speed from targetHeight location
         double shooter_adjust_rate = 0.05; //How sensitive shooter speed is to distance
         double shooter_speed_adjust = ((ty - target_ty) * -1) / shooter_adjust_rate; //Calculate
 
@@ -266,7 +278,7 @@ public class VisionShooterTurret extends TeleopModule {
             steering_adjust = KpAim*heading_error + min_aim;
         }
 
-        double distance_adjust = KpDistance * (distance_error - target_height);
+        double distance_adjust = KpDistance * (distance_error - targetHeight);
 
         double leftSpeed = steering_adjust + distance_adjust;
         double rightSpeed = -steering_adjust + distance_adjust;
@@ -309,7 +321,7 @@ public class VisionShooterTurret extends TeleopModule {
             inDesiredAngle = true;
         }
 
-        double distance_adjust = KpDistance * (distance_error - target_height);
+        double distance_adjust = KpDistance * (distance_error - targetHeight);
         if (distance_adjust < 0.05) {
             inDesiredPosition = true;
         }
