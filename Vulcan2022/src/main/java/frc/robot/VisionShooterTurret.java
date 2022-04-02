@@ -31,7 +31,7 @@ public class VisionShooterTurret extends TeleopModule {
     private final double highShooterSpeed = 0.57;
     private final double second = 20;
     private final double startTransferDelay = second * 3;
-    private final double transferSpeed = 0.4;
+    private final double transferSpeed = 0.33;
     private double startTransferTimer = 0;
     private double intakeSpeed = 1;
     private boolean kill_turret = false;
@@ -181,9 +181,6 @@ public class VisionShooterTurret extends TeleopModule {
         
         //Get horizontal Offset From Crosshair To Target (-29.8 to 29.8deg)
         double tx = visionVals[0]; 
-        
-        //Exit loop if in range
-        if (Math.abs(tx) < visionrange) return;
 
         //Turret speed
         double turret_speed = tx / 40;
@@ -198,6 +195,9 @@ public class VisionShooterTurret extends TeleopModule {
         if (leftLimitSwitch.get()) {
             turret_speed = Math.max(turret_speed, 0); //Only postive speeds
         }
+
+        //Stop turning turret if in range
+        if (Math.abs(tx) < visionrange) turret_speed = 0;
 
         //Set turret motor to turret speed
         turret.set(turret_speed);
@@ -215,14 +215,14 @@ public class VisionShooterTurret extends TeleopModule {
         shooter_running_time++;
 
         //If turret isn't aiming at target then exit function
-        if (Math.abs(turret_speed) > 0.04) return;
+        if (Math.abs(tx) < visionrange) return;
 
         //Run transfer if the shooter has ran for long enough
         if (shooter_running_time > startTransferDelay) {
             transferIn();
-        } else {
-            transferStop();
-        } 
+            intakeMotor.set(intakeSpeed);
+        }
+        else transferStop();
     }
     
     public void turnToTarget() {
