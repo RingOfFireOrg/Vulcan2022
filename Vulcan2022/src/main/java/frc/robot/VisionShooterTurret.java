@@ -27,7 +27,7 @@ public class VisionShooterTurret extends TeleopModule {
     
     //Important Vision Vars
     private final double visionrange = 1.5;
-    private final double targetHeight = 21; //Tape to limelight's crosshair percent
+    private final double targetHeight = 12; //Tape to limelight's crosshair percent
 
     //Shooter, Turret, and Intake vars
     private final double lowShooterSpeed = 0.3;
@@ -89,14 +89,14 @@ public class VisionShooterTurret extends TeleopModule {
             turretToTarget();
             //turretAndShootToTarget();
         } else {
-            // if (turretEncoder.getPosition() < -turretErrorRange) {
-            //     turret.set(0.05);
-            // } else if (turretEncoder.getPosition() > turretErrorRange) {
-            //     turret.set(-0.05);
-            // } else {
-            //     turret.set(0);
-            // }
-            // shooter_running_time = 0;
+            if (turretEncoder.getPosition() < -turretErrorRange) {
+                turret.set(0.05);
+            } else if (turretEncoder.getPosition() > turretErrorRange) {
+                turret.set(-0.05);
+            } else {
+                turret.set(0);
+            }
+            shooter_running_time = 0;
         }
 
         // if (killTurret) turret.set(0);
@@ -189,7 +189,11 @@ public class VisionShooterTurret extends TeleopModule {
         double turret_speed = tx / 20;
 
         //Clamp speed between -0.1 and 0.1
-      //  turret_speed = Math.min(Math.max(turret_speed, -0.1), 0.1);
+        turret_speed = Math.min(Math.max(turret_speed, -0.1), 0.1);
+
+        turret_speed = 0;
+        if (tx < -visionrange) turret_speed = -0.1;
+        if (tx > visionrange) turret_speed = 0.1;
 
         //Clamp speed w/ encoder
         if (turretEncoder.getPosition() > turretEncoderRange) {

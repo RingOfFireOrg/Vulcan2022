@@ -56,7 +56,7 @@ public class Container {
         backLeftMotor.setInverted(true);
         
         intakeMotor = new VictorSP(6);
-        intakeExtendingMotor = new VictorSP(9);
+        intakeExtendingMotor = new VictorSP(5);
 
         leftEncoder = frontLeftMotor.getEncoder();
         rightEncoder = frontRightMotor.getEncoder();
