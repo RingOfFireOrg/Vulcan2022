@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 
@@ -60,6 +61,8 @@ public class Robot extends TimedRobot {
     transfer.teleopControl();
     intake.teleopControl();
     visionShooterTurret.teleopControl();
+
+    SmartDashboard.putNumber("Turret Encoder", Container.get().turretEncoder.getPosition());
     
     //subscribe to meldrop
     //drop at tilted towers

@@ -23,6 +23,7 @@ public class Container {
     public CANSparkMax frontLeftMotor;
     public CANSparkMax backLeftMotor;
     public VictorSP intakeMotor;
+    public VictorSP intakeExtendingMotor;
     public CANSparkMax transferMotor1;
     public CANSparkMax transferMotor2;
     public TalonFX shooter;
@@ -55,6 +56,7 @@ public class Container {
         backLeftMotor.setInverted(true);
         
         intakeMotor = new VictorSP(6);
+        intakeExtendingMotor = new VictorSP(9);
 
         leftEncoder = frontLeftMotor.getEncoder();
         rightEncoder = frontRightMotor.getEncoder();

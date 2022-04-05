@@ -76,13 +76,14 @@ public class Controllers {
     }
     public String mGamepadPov() {
         if (manipulatorController.getPOV() == 0) {
-            return "left";
+            return "up";
         } 
         if (manipulatorController.getPOV() == 180) {
-            return "right";
+            return "down";
         }
         return "";
-    }
+    } 
+
 
     //Climber controller functions
     public String cGamepadPov() {

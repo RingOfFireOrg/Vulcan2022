@@ -35,7 +35,7 @@ public class VisionShooterTurret extends TeleopModule {
     private final double second = 20;
     private final double startTransferDelay = second * 3;
     private final double transferSpeed = 0.33;
-    private final double turretEncoderRange = 10;
+    private final double turretEncoderRange = 12.5;
     private final double turretErrorRange = 1;
     private double startTransferTimer = 0;
     private double intakeSpeed = 1;
@@ -65,22 +65,41 @@ public class VisionShooterTurret extends TeleopModule {
         //Shooter Control
         shooterControl();
 
+        // double turretSpeed = 0;//Controllers.get().mGamepadLeftY();
+        // // if (Math.abs(Controllers.get().mGamepadLeftY()) < 0.06) {
+        // //     turretSpeed = 0;
+        // // }
+        // if (Controllers.get().mGamepadPov() == "up") { //In
+        //     turretSpeed = 0.1;
+        // } else if (Controllers.get().mGamepadPov() == "down") { //Out
+        //     turretSpeed = -0.1;
+        // }
+
+        // if (turretEncoder.getPosition() < -turretEncoderRange) {
+        //     turretSpeed = Math.max(turretSpeed, 0);
+        // }
+        // if (turretEncoder.getPosition() > turretEncoderRange) {
+        //     turretSpeed = Math.min(turretSpeed, 0);
+        // }
+
+        // //turret.set(turretSpeed);
+
         //Driver vision turn and position
         if (Controllers.get().dGamepadLeftBumper() == true) {
             turretToTarget();
             //turretAndShootToTarget();
         } else {
-            if (turretEncoder.getPosition() < -turretErrorRange) {
-                turret.set(0.05);
-            } else if (turretEncoder.getPosition() > turretErrorRange) {
-                turret.set(-0.05);
-            } else {
-                turret.set(0);
-            }
-            shooter_running_time = 0;
+            // if (turretEncoder.getPosition() < -turretErrorRange) {
+            //     turret.set(0.05);
+            // } else if (turretEncoder.getPosition() > turretErrorRange) {
+            //     turret.set(-0.05);
+            // } else {
+            //     turret.set(0);
+            // }
+            // shooter_running_time = 0;
         }
 
-        if (killTurret) turret.set(0);
+        // if (killTurret) turret.set(0);
     }
 
     public double[] getVisionVals() {
@@ -158,19 +177,19 @@ public class VisionShooterTurret extends TeleopModule {
         double[] visionVals = getVisionVals();
 
         //If no target, exit function
-        if (visionVals[2] == 0) return;
+        //if (visionVals[2] == 0) return;
 
         //Get horizontal Offset From Crosshair To Target (-29.8 to 29.8deg)
         double tx = visionVals[0]; 
         
         //Exit loop if in range
-        if (Math.abs(tx) < visionrange) return;
+        //if (Math.abs(tx) < visionrange) return;
 
         //Turret speed
-        double turret_speed = tx / 40;
+        double turret_speed = tx / 20;
 
         //Clamp speed between -0.1 and 0.1
-        turret_speed = Math.min(Math.max(turret_speed, -0.1), 0.1);
+      //  turret_speed = Math.min(Math.max(turret_speed, -0.1), 0.1);
 
         //Clamp speed w/ encoder
         if (turretEncoder.getPosition() > turretEncoderRange) {
@@ -182,6 +201,10 @@ public class VisionShooterTurret extends TeleopModule {
 
         //Set turret motor to turret speed
         turret.set(turret_speed);
+
+        //Smartdashboard
+        SmartDashboard.putNumber("turret speed", turret_speed);
+        SmartDashboard.putNumber("limelight x", tx);
     }
 
     public void turretAndShootToTarget() {
