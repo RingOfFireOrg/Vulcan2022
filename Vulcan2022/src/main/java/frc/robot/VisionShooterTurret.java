@@ -27,11 +27,11 @@ public class VisionShooterTurret extends TeleopModule {
     
     //Important Vision Vars
     private final double visionrange = 1.5;
-    private final double targetHeight = 12; //Tape to limelight's crosshair percent
+    private final double targetHeight = 14.3; //Tape to limelight's crosshair percent
 
     //Shooter, Turret, and Intake vars
     private final double lowShooterSpeed = 0.3;
-    private final double highShooterSpeed = 0.57;
+    private final double highShooterSpeed = 0.56;
     private final double second = 20;
     private final double startTransferDelay = second * 3;
     private final double transferSpeed = 0.33;
@@ -63,7 +63,7 @@ public class VisionShooterTurret extends TeleopModule {
 
     public void teleopControl() {
         //Shooter Control
-        shooterControl();
+        //shooterControl();
 
         // double turretSpeed = 0;//Controllers.get().mGamepadLeftY();
         // // if (Math.abs(Controllers.get().mGamepadLeftY()) < 0.06) {
@@ -86,8 +86,8 @@ public class VisionShooterTurret extends TeleopModule {
 
         //Driver vision turn and position
         if (Controllers.get().dGamepadLeftBumper() == true) {
-            turretToTarget();
-            //turretAndShootToTarget();
+            //turretToTarget();
+            turretAndShootToTarget();
         } else {
             if (turretEncoder.getPosition() < -turretErrorRange) {
                 turret.set(0.05);
@@ -97,6 +97,7 @@ public class VisionShooterTurret extends TeleopModule {
                 turret.set(0);
             }
             shooter_running_time = 0;
+            shooter.set(ControlMode.PercentOutput, 0);
         }
 
         // if (killTurret) turret.set(0);
@@ -192,8 +193,8 @@ public class VisionShooterTurret extends TeleopModule {
         turret_speed = Math.min(Math.max(turret_speed, -0.1), 0.1);
 
         turret_speed = 0;
-        if (tx < -visionrange) turret_speed = -0.1;
-        if (tx > visionrange) turret_speed = 0.1;
+        if (tx < -visionrange) turret_speed = 0.1;
+        if (tx > visionrange) turret_speed = -0.1;
 
         //Clamp speed w/ encoder
         if (turretEncoder.getPosition() > turretEncoderRange) {
@@ -216,16 +217,26 @@ public class VisionShooterTurret extends TeleopModule {
         double[] visionVals = getVisionVals();
 
         //If no target, exit function
-        if (visionVals[2] == 0) return;
+        //if (visionVals[2] == 0) return;
         
         //Get horizontal Offset From Crosshair To Target (-29.8 to 29.8deg)
         double tx = visionVals[0]; 
 
+        // //Turret speed
+        // double turret_speed = tx / 40;
+
+        // //Clamp speed between -0.1 and 0.1
+        // turret_speed = Math.min(Math.max(turret_speed, -0.1), 0.1);
+
         //Turret speed
-        double turret_speed = tx / 40;
+        double turret_speed = tx / 20;
 
         //Clamp speed between -0.1 and 0.1
         turret_speed = Math.min(Math.max(turret_speed, -0.1), 0.1);
+
+        turret_speed = 0;
+        if (tx < -visionrange) turret_speed = 0.1;
+        if (tx > visionrange) turret_speed = -0.1;
 
         //Clamp speed w/ encoder
         if (turretEncoder.getPosition() > turretEncoderRange) {
@@ -242,19 +253,23 @@ public class VisionShooterTurret extends TeleopModule {
         turret.set(turret_speed);
 
         //Shooter - Calculate speed
-        double ty = -visionVals[1]; // +-24.85
+        double ty = visionVals[1]; // +-24.85
         double target_ty = targetHeight; //base, -21.xx (ADJUST ADJUST CHANGE IT);
         double shooter_base_speed = highShooterSpeed; //Working speed from targetHeight location
-        double shooter_adjust_rate = 0.05; //How sensitive shooter speed is to distance
-        double shooter_speed_adjust = ((ty - target_ty) * -1) / shooter_adjust_rate; //Calculate
+
+        double shooter_speed_adjust = (ty - target_ty) * 0.004; //Calculate
+
 
         //Set shooter motor to shooter speed
         double shooter_speed = shooter_base_speed + shooter_speed_adjust;
+        SmartDashboard.putNumber("Shooter Speed", shooter_speed);
+        SmartDashboard.putNumber("Shooter Speed Adjust", shooter_speed_adjust);
+
         shooter.set(ControlMode.PercentOutput, shooter_speed);
         shooter_running_time++;
 
         //If turret isn't aiming at target then exit function
-        if (Math.abs(tx) < visionrange) return;
+        //if (Math.abs(tx) < visionrange) return;
 
         //Run transfer if the shooter has ran for long enough
         if (shooter_running_time > startTransferDelay) {
