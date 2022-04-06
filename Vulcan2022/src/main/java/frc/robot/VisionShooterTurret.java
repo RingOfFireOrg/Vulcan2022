@@ -16,8 +16,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class VisionShooterTurret extends TeleopModule {
-    
-    private MotorControllerGroup leftMotors, rightMotors;
+    //Subsystems
     public TalonFX shooter;
     public CANSparkMax transferMotor1, transferMotor2;
     public VictorSP intakeMotor;
@@ -27,30 +26,28 @@ public class VisionShooterTurret extends TeleopModule {
     
     //Important Vision Vars
     private final double visionrange = 1.5;
-    private final double targetHeight = 14.3; //Tape to limelight's crosshair percent
-
-    //Shooter, Turret, and Intake vars
+    private final double targetHeight = 14.3; //Target limelight ty value
+    
+    //Shooter
     private final double lowShooterSpeed = 0.3;
     private final double highShooterSpeed = 0.56;
+    private double shooter_running_time = 0;
     private final double second = 20;
-    private final double startTransferDelay = second * 3;
+
+    //Transfer
+    private final double startTransferDelay = second * 3.5;
     private final double transferSpeed = 0.33;
+    private double startTransferTimer = 0;
+
+    //Turret
     private final double turretEncoderRange = 12.5;
     private final double turretErrorRange = 1;
-    private double startTransferTimer = 0;
+    
+    //Intake
     private double intakeSpeed = 1;
-    private boolean killTurret = false;
-    private double shooter_running_time = 0;
 
     public void teleopInit() {
-        rightMotors = new MotorControllerGroup(
-            Container.get().frontRightMotor,
-            Container.get().backRightMotor
-        );
-        leftMotors = new MotorControllerGroup(
-            Container.get().frontLeftMotor,
-            Container.get().backLeftMotor
-        );
+        //Get all subsystems from Container.java
         transferMotor1 = Container.get().transferMotor1;
         transferMotor2 = Container.get().transferMotor2;
         shooter = Container.get().shooter;
@@ -62,33 +59,12 @@ public class VisionShooterTurret extends TeleopModule {
     }
 
     public void teleopControl() {
-        //Shooter Control
-        //shooterControl();
-
-        // double turretSpeed = 0;//Controllers.get().mGamepadLeftY();
-        // // if (Math.abs(Controllers.get().mGamepadLeftY()) < 0.06) {
-        // //     turretSpeed = 0;
-        // // }
-        // if (Controllers.get().mGamepadPov() == "up") { //In
-        //     turretSpeed = 0.1;
-        // } else if (Controllers.get().mGamepadPov() == "down") { //Out
-        //     turretSpeed = -0.1;
-        // }
-
-        // if (turretEncoder.getPosition() < -turretEncoderRange) {
-        //     turretSpeed = Math.max(turretSpeed, 0);
-        // }
-        // if (turretEncoder.getPosition() > turretEncoderRange) {
-        //     turretSpeed = Math.min(turretSpeed, 0);
-        // }
-
-        // //turret.set(turretSpeed);
-
-        //Driver vision turn and position
-        if (Controllers.get().dGamepadLeftBumper() == true) {
-            //turretToTarget();
+        //Teleoperated manipulator controls
+        if (Controllers.get().mGamepadRightBumper()) {
+            //Turn turret to target and shoot
             turretAndShootToTarget();
         } else {
+            //Center turret back to facing forward
             if (turretEncoder.getPosition() < -turretErrorRange) {
                 turret.set(0.05);
             } else if (turretEncoder.getPosition() > turretErrorRange) {
@@ -96,11 +72,13 @@ public class VisionShooterTurret extends TeleopModule {
             } else {
                 turret.set(0);
             }
-            shooter_running_time = 0;
-            shooter.set(ControlMode.PercentOutput, 0);
-        }
 
-        // if (killTurret) turret.set(0);
+            //Reset shooter timer for auto shooting
+            shooter_running_time = 0;
+
+            //Enable manipulator shooter control
+            shooterControl();
+        }
     }
 
     public double[] getVisionVals() {
@@ -137,7 +115,10 @@ public class VisionShooterTurret extends TeleopModule {
     }
 
     public void shooterControl() {
+        //Create shooter speed variable
         double shooterSpeed = 0;
+
+        //Manipulator Triggers for high and low shooter
         if (Controllers.get().mGamepadRightTrigger() > 0.1) {
             shooterSpeed = highShooterSpeed;
         } else if (Controllers.get().mGamepadLeftTrigger() > 0.1) {
@@ -145,20 +126,10 @@ public class VisionShooterTurret extends TeleopModule {
         }
 
         if (Controllers.get().mGamepadLeftBumper() == true) {
+            //Auto low shooter
             shooterSpeed = lowShooterSpeed;
             startTransferTimer++;
 
-            if (startTransferTimer > startTransferDelay) {
-                transferIn();
-                intakeMotor.set(intakeSpeed);
-            } else {
-                transferStop();
-                intakeMotor.set(0);
-            }
-        } else if (Controllers.get().mGamepadRightBumper() == true) {
-            shooterSpeed = highShooterSpeed;
-            startTransferTimer++;
-            
             if (startTransferTimer > startTransferDelay) {
                 transferIn();
                 intakeMotor.set(intakeSpeed);
@@ -170,6 +141,7 @@ public class VisionShooterTurret extends TeleopModule {
             startTransferTimer = 0;
         }
 
+        //Set shooter speed
         shooter.set(ControlMode.PercentOutput, shooterSpeed);
     }
 
@@ -177,14 +149,8 @@ public class VisionShooterTurret extends TeleopModule {
         //Read vision values
         double[] visionVals = getVisionVals();
 
-        //If no target, exit function
-        //if (visionVals[2] == 0) return;
-
         //Get horizontal Offset From Crosshair To Target (-29.8 to 29.8deg)
         double tx = visionVals[0]; 
-        
-        //Exit loop if in range
-        //if (Math.abs(tx) < visionrange) return;
 
         //Turret speed
         double turret_speed = tx / 20;
@@ -204,29 +170,19 @@ public class VisionShooterTurret extends TeleopModule {
             turret_speed = Math.max(turret_speed, 0); //Only postive speeds
         }
 
+        //Stop turret if in range
+        if (Math.abs(tx) < visionrange) turret_speed = 0;
+
         //Set turret motor to turret speed
         turret.set(turret_speed);
-
-        //Smartdashboard
-        SmartDashboard.putNumber("turret speed", turret_speed);
-        SmartDashboard.putNumber("limelight x", tx);
     }
 
     public void turretAndShootToTarget() {
         //Read vision values
         double[] visionVals = getVisionVals();
-
-        //If no target, exit function
-        //if (visionVals[2] == 0) return;
         
         //Get horizontal Offset From Crosshair To Target (-29.8 to 29.8deg)
         double tx = visionVals[0]; 
-
-        // //Turret speed
-        // double turret_speed = tx / 40;
-
-        // //Clamp speed between -0.1 and 0.1
-        // turret_speed = Math.min(Math.max(turret_speed, -0.1), 0.1);
 
         //Turret speed
         double turret_speed = tx / 20;
@@ -246,30 +202,21 @@ public class VisionShooterTurret extends TeleopModule {
             turret_speed = Math.max(turret_speed, 0); //Only postive speeds
         }
 
-        //Stop turning turret if in range
+        //Stop turret if in range
         if (Math.abs(tx) < visionrange) turret_speed = 0;
 
         //Set turret motor to turret speed
         turret.set(turret_speed);
 
-        //Shooter - Calculate speed
+        //Shooter - Calculate speed adjust
         double ty = visionVals[1]; // +-24.85
-        double target_ty = targetHeight; //base, -21.xx (ADJUST ADJUST CHANGE IT);
-        double shooter_base_speed = highShooterSpeed; //Working speed from targetHeight location
-
-        double shooter_speed_adjust = (ty - target_ty) * 0.004; //Calculate
-
+        double shooter_speed_adjust = (ty - targetHeight) * 0.004; //Calculate
 
         //Set shooter motor to shooter speed
-        double shooter_speed = shooter_base_speed + shooter_speed_adjust;
-        SmartDashboard.putNumber("Shooter Speed", shooter_speed);
-        SmartDashboard.putNumber("Shooter Speed Adjust", shooter_speed_adjust);
+        double shooter_speed = highShooterSpeed + shooter_speed_adjust;
 
         shooter.set(ControlMode.PercentOutput, shooter_speed);
         shooter_running_time++;
-
-        //If turret isn't aiming at target then exit function
-        //if (Math.abs(tx) < visionrange) return;
 
         //Run transfer if the shooter has ran for long enough
         if (shooter_running_time > startTransferDelay) {
@@ -279,113 +226,6 @@ public class VisionShooterTurret extends TeleopModule {
         else transferStop();
     }
     
-    public void turnToTarget() {
-        double[] visionVals = getVisionVals();
-        double KpAim = 0.07f;
-        double min_aim = 0.05f;
-
-        double tx = visionVals[0];
-
-        double heading_error = tx;
-        double steering_adjust = 0.0f;
-
-        if (tx > visionrange) {
-            steering_adjust = KpAim*heading_error - min_aim;
-        }
-        else if (tx < -visionrange) {
-            steering_adjust = KpAim*heading_error + min_aim;
-        }
-
-        leftMotors.set(steering_adjust);
-        rightMotors.set(-steering_adjust);
-    }
-
-    public void turnToTargetAndDrive() {
-        double[] visionVals = getVisionVals();
-        double KpAim = 0.07f;
-        double KpDistance = 0.07f;
-        double min_aim = 0.05f;
-
-        double tx = visionVals[0];
-        double ty = visionVals[1];
-
-        double heading_error = tx;
-        double distance_error = ty;
-        double steering_adjust = 0.0f;
-
-        if (tx > visionrange) {
-            steering_adjust = KpAim*heading_error - min_aim;
-        }
-        else if (tx < -visionrange) {
-            steering_adjust = KpAim*heading_error + min_aim;
-        }
-
-        double distance_adjust = KpDistance * (distance_error - targetHeight);
-
-        double leftSpeed = steering_adjust + distance_adjust;
-        double rightSpeed = -steering_adjust + distance_adjust;
-
-        if (leftSpeed < -0.8 || rightSpeed < -0.8 || leftSpeed > 0.8 || rightSpeed > 0.8) {
-            leftSpeed /= 1.2;
-            rightSpeed /= 1.2;
-        }
-
-        leftSpeed /= 1.4;
-        rightSpeed /= 1.4;
-
-        leftMotors.set(leftSpeed);
-        rightMotors.set(rightSpeed);
-    }
-
-    public void everythingBagel() {
-        double[] visionVals = getVisionVals();
-        double KpAim = -0.07f;
-        double KpDistance = 0.07f;
-        double min_aim = 0.05f;
-
-        double tx = visionVals[0];
-        double ty = visionVals[1];
-
-        double heading_error = -tx;
-        double distance_error = ty;
-        double steering_adjust = 0.0f;
-
-        boolean inDesiredPosition = false;
-        boolean inDesiredAngle = false;
-
-        if (tx > visionrange) {
-            steering_adjust = KpAim*heading_error - min_aim;
-        }
-        else if (tx < -visionrange) {
-            steering_adjust = KpAim*heading_error + min_aim;
-        }
-        else {
-            inDesiredAngle = true;
-        }
-
-        double distance_adjust = KpDistance * (distance_error - targetHeight);
-        if (distance_adjust < 0.05) {
-            inDesiredPosition = true;
-        }
-
-        leftMotors.set(steering_adjust + distance_adjust);
-        rightMotors.set(-steering_adjust + distance_adjust);
-
-        double shooterSpeed = highShooterSpeed;
-        if (inDesiredPosition && inDesiredAngle) {
-            startTransferTimer++;
-            if (startTransferTimer > startTransferDelay) {
-                transferIn();
-            } else {
-                transferStop();
-            } 
-        } else {
-            startTransferTimer = 0;
-        }
-
-        shooter.set(ControlMode.PercentOutput, shooterSpeed);
-    }
-
     public void transferIn() {
         transferMotor1.set(transferSpeed);
         transferMotor2.set(-transferSpeed);
