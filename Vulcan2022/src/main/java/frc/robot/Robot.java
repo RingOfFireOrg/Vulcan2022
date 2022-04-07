@@ -10,7 +10,8 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 
 /**
- * This is a demo program showing the use of the DifferentialDrive class, specifically it contains
+ * This is a demo program showing the use of the DifferentialDrive class,
+ * specifically it contains
  * the code necessary to operate a robot with tank drive.
  */
 public class Robot extends TimedRobot {
@@ -21,7 +22,7 @@ public class Robot extends TimedRobot {
   protected Transfer transfer;
   protected Intake intake;
   protected VisionShooterTurret visionShooterTurret;
-  
+
   @Override
   public void robotInit() {
     driveTrain = new DriveTrain();
@@ -31,7 +32,6 @@ public class Robot extends TimedRobot {
     intake = new Intake();
     visionShooterTurret = new VisionShooterTurret();
 
-    driveTrain.teleopInit();
     climber.teleopInit();
     transfer.teleopInit();
     intake.teleopInit();
@@ -42,7 +42,8 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+  }
 
   @Override
   public void autonomousInit() {
@@ -53,7 +54,7 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     autonomous.autonomousPeriodic();
   }
-  
+
   @Override
   public void teleopPeriodic() {
     driveTrain.teleopControl();
@@ -63,10 +64,10 @@ public class Robot extends TimedRobot {
     visionShooterTurret.teleopControl();
 
     SmartDashboard.putNumber("Turret Encoder", Container.get().turretEncoder.getPosition());
-    
-    //subscribe to meldrop
-    //drop at tilted towers
-    //oh no dr disrespect is right there
-    //die
+
+    // subscribe to meldrop
+    // drop at tilted towers
+    // oh no dr disrespect is right there
+    // die
   }
-} //nice
+} // nice
