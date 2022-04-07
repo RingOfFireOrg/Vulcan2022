@@ -1,7 +1,6 @@
 package frc.robot; 
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  
 import com.ctre.phoenix.motorcontrol.ControlMode;

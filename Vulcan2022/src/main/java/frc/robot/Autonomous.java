@@ -17,14 +17,14 @@ public class Autonomous {
     private double driveOffset = 3;
     private double turnOffset = 12;
     private int timer = 0;
-    private int second = 20;
+    private int second = 50;
     private double FEET = 8.50;   
     private double leftEncoderOffset = 0;
     private double rightEncoderOffset = 0;
     private double leftPower = 0.4, rightPower = leftPower;
     private final int visionrange = 2;
     
-    private int autonomousStep = 0;
+    private int autonomousStep = -1;
     private String autoType = "smartauto";
 
     public void autonomousInit() {
@@ -211,66 +211,28 @@ public class Autonomous {
         resetEncoders();
         shooterStop();
         intakeStop();
+        Container.get().intakeExtendingMotor.set(0);
         timer = 0;
     }
 
     public void autonomousPeriodic() {
         SmartDashboard.putNumber("Absolute Direction", getAbsoluteDirection());
-        if (autoType == "dumbauto") {
+        if (autoType == "smartauto") {
             switch (autonomousStep) {
-                case 0: {
+                case -1: {
                     reset();
                     autonomousStep++;
                     break;
                 }
-                case 1: {
-                    intakeIn();
-                    drive("forward", FEET * 8.34);
-                    break; 
-                }
-                case 2: {
-                    turn("right", 180);
-                    break;
-                }
-                case 3: {
-                    intakeIn();
-                    drive("forward", FEET * 14.51);
-                    break; 
-                }
-                case 4: {
-                    //Start shooter
-                    intakeStop();
-                    if (timer < second * 2.5) {
-                        shoot();
+                case 0: {
+                    //Vision
+                    if (timer < second * 5.5) {
+                        Container.get().intakeExtendingMotor.set(1);
                         timer++;
                     } else {
                         autonomousStep++;
                         reset();
                     }
-                    break;
-                }
-                case 5: {
-                    if (timer < second * 4.5) {
-                        transferIn();
-                        shoot();
-                        timer++;
-                    } else {
-                        autonomousStep++;
-                        reset();
-                    }
-                    break;
-                }
-                case 6: {
-                    shooterStop();
-                    break;
-                }
-            }
-        } 
-        else if (autoType == "smartauto") {
-            switch (autonomousStep) {
-                case 0: {
-                    reset();
-                    autonomousStep++;
                     break;
                 }
                 case 1: {
@@ -298,7 +260,6 @@ public class Autonomous {
                         reset();
                     }
                     break;
-
                 }
                 case 5: {
                     if (timer < second * 1) {
@@ -335,56 +296,6 @@ public class Autonomous {
                     break;
                 }
                 case 8: {
-                    shooterStop();
-                    break;
-                }
-            }
-        }
-        else if (autoType == "dumbvisionauto") {
-            switch (autonomousStep) {
-                case 0: {
-                    reset();
-                    autonomousStep++;
-                    break;
-                }
-                case 1: {
-                    intakeIn();
-                    drive("forward", FEET * 8.34);
-                    break; 
-                }
-                case 2: {
-                    turn("right", 180);
-                    break;
-                }
-                case 3: {
-                    intakeIn();
-                    drive("forward", FEET * 14.51);
-                    break; 
-                }
-                case 4: {
-                    //Start shooter
-                    intakeStop();
-                    if (timer < second * 2.5) {
-                        shoot();
-                        timer++;
-                    } else {
-                        autonomousStep++;
-                        reset();
-                    }
-                    break;
-                }
-                case 5: {
-                    if (timer < second * 4.5) {
-                        transferIn();
-                        shoot();
-                        timer++;
-                    } else {
-                        autonomousStep++;
-                        reset();
-                    }
-                    break;
-                }
-                case 6: {
                     shooterStop();
                     break;
                 }
