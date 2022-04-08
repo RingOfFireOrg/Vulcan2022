@@ -35,7 +35,7 @@ public class VisionShooterTurret {
     private double shooter_velocity = 0;
 
     // Transfer
-    private final double startTransferDelay = second * 3.5;
+    private final double startTransferDelay = second * 3.75;
     private final double transferSpeed = 0.4;
     public boolean reverseTransfer = false;
     private double startTransferTimer = 0;
@@ -61,9 +61,10 @@ public class VisionShooterTurret {
     }
 
     public void teleopControl() {
-        // Update reverse transfer timer for auto shoot
+        // Update reverse transfer timer for auto shootings
         if (reverseTransfer) {
             reverseTransferTimer++;
+
             if (reverseTransferTimer >= second * 0.75) {
                 reverseTransfer = false;
             }
@@ -71,10 +72,13 @@ public class VisionShooterTurret {
 
         // Teleoperated manipulator controls
         if (Controllers.get().mGamepadRightBumper()) {
-            // Turn turret to target and shoot
+            // Turn turret to target and shoot with vision
             turretAndShootToTarget();
         } else {
-            // Center turret back to facing forward
+            // Enable manipulator shooter control
+            shooterControl();
+
+            // Rotate turret back to facing forward
             if (turretEncoder.getPosition() < -turretErrorRange)
                 turret.set(0.05);
             else if (turretEncoder.getPosition() > turretErrorRange)
@@ -84,42 +88,24 @@ public class VisionShooterTurret {
 
             // Reset shooter timer for auto shooting with vision
             shooter_running_time = 0;
-
-            // Enable manipulator shooter control
-            shooterControl();
         }
     }
 
     public double[] getVisionVals() {
         // https://docs.limelightvision.io/en/latest/networktables_api.html
         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-        NetworkTableEntry tx = table.getEntry("tx");
-        NetworkTableEntry ty = table.getEntry("ty");
-        NetworkTableEntry ta = table.getEntry("ta");
-        NetworkTableEntry tv = table.getEntry("tv");
 
         // Horizontal Offset From Crosshair To Target (-29.8 to 29.8deg)
-        double x = tx.getDouble(0.0);
+        double x = table.getEntry("tx").getDouble(0.0);
 
         // Vertical Offset From Crosshair To Target (-24.85 to 24.85deg)
-        double y = ty.getDouble(0.0);
-
-        // Target Area (0% of image to 100% of image)
-        double area = ta.getDouble(0.0);
-
-        // Whether the limelight has any valid targets (0 or 1)
-        double targets = tv.getDouble(0.0);
+        double y = table.getEntry("ty").getDouble(0.0);
 
         // post to smart dashboard
         SmartDashboard.putNumber("LimelightX", x);
         SmartDashboard.putNumber("LimelightY", y);
-        SmartDashboard.putNumber("LimelightArea", area);
-        SmartDashboard.putNumber("LimelightTarget", targets);
 
-        SmartDashboard.putBoolean("In range and pointed at target", Math.abs(x) < 0.04);
-        SmartDashboard.putBoolean("In range", targets == 1);
-
-        double[] arr = { x, y, targets };
+        double[] arr = { x, y };
         return arr;
     }
 
@@ -130,44 +116,51 @@ public class VisionShooterTurret {
 
         // Manipulator Triggers for high and low shooter
         if (Controllers.get().mGamepadRightTrigger() > 0.1) {
+            // High shooter
             shooterSpeed = highShooterSpeed;
         } else if (Controllers.get().mGamepadLeftTrigger() > 0.1) {
+            // Low shooter
             shooterSpeed = lowShooterSpeed;
         }
 
+        // Put shooter velocity into smart dashboard
         SmartDashboard.putNumber("Shooter Velocity", shooter.getSelectedSensorVelocity());
+
+        // Auto low shooter
         if (Controllers.get().mGamepadLeftBumper() == true) {
-            // Auto low shooter
             shooterSpeed = lowShooterSpeed;
             startTransferTimer++;
 
             if (startTransferTimer > startTransferDelay) {
-                // Get shooter velocity
-                double current_shooter_velocity = shooter.getSelectedSensorVelocity();
-
+                // Save old shooter velocity
                 double past_shooter_velocity = shooter_velocity;
-                shooter_velocity = current_shooter_velocity;
 
+                // Get current shooter velocity
+                shooter_velocity = shooter.getSelectedSensorVelocity();
+
+                // If the shooter velocity went down by 50 then reverse transfer
                 if (past_shooter_velocity != 0 && past_shooter_velocity - shooter_velocity > 50) {
-                    // Ball went though!
                     reverseTransfer = true;
                 }
 
-                //Run transfer
+                // Run transfer
                 if (reverseTransfer) {
                     transferOut();
                 } else {
                     transferIn();
                 }
 
+                // Run intake
                 intakeMotor.set(intakeSpeed);
             } else {
+                // Reset everything
                 transferStop();
                 intakeMotor.set(0);
                 shooter_velocity = 0;
                 reverseTransfer = false;
             }
         } else {
+            // Reset auto transfer timer for next time
             startTransferTimer = 0;
         }
 
@@ -175,7 +168,7 @@ public class VisionShooterTurret {
         shooter.set(ControlMode.PercentOutput, shooterSpeed);
     }
 
-    // TMethod to turn turret to target
+    // Method to turn turret to target
     public void turretToTarget() {
         // Read vision values
         double[] visionVals = getVisionVals();
@@ -198,7 +191,7 @@ public class VisionShooterTurret {
         if (turretEncoder.getPosition() < -turretEncoderRange)
             turret_speed = Math.max(turret_speed, 0); // Only postive speeds
 
-        // Stop turret if in range
+        // Stop turret if in target is in range
         if (Math.abs(tx) < visionrange)
             turret_speed = 0;
 
@@ -211,8 +204,11 @@ public class VisionShooterTurret {
         // Read vision values
         double[] visionVals = getVisionVals();
 
-        // Get horizontal Offset From Crosshair To Target (-29.8 to 29.8deg)
+        // Get Horizontal Offset From Crosshair To Target (-29.8 to 29.8deg)
         double tx = visionVals[0];
+
+        // Get Vertical Offset From Crosshair To Target (-24.85 to 24.85deg)
+        double ty = visionVals[1];
 
         // Turret speed
         double turret_speed = 0;
@@ -222,7 +218,7 @@ public class VisionShooterTurret {
         if (tx > visionrange)
             turret_speed = -0.1;
 
-        // Clamp speed w/ encoder
+        // Clamp turret speed w/ encoder
         if (turretEncoder.getPosition() > turretEncoderRange)
             turret_speed = Math.min(turret_speed, 0); // Only negative speeds
 
@@ -237,28 +233,28 @@ public class VisionShooterTurret {
         turret.set(turret_speed);
 
         // Shooter - Calculate speed
-        double ty = visionVals[1]; // -24.85 to 24.85 deg
-        double shooter_speed_adjust = (ty - targetHeight) * 0.004; // Calculate
-        double shooter_speed = highShooterSpeed + shooter_speed_adjust;
+        double shooter_speed = highShooterSpeed + ((ty - targetHeight) / 250);
 
         // Set shooter motor to shooter speed
-        shooter.set(ControlMode.PercentOutput, highShooterSpeed/*shooter_speed*/);
+        shooter.set(ControlMode.PercentOutput, highShooterSpeed/* shooter_speed */);
+
+        // Increment shooter running time for auto transfer
         shooter_running_time++;
 
         // Run transfer if the shooter has ran for long enough
         if (shooter_running_time > startTransferDelay) {
-            // Get shooter velocity
-            double current_shooter_velocity = shooter.getSelectedSensorVelocity();
-
+            // Save old shooter velocity
             double past_shooter_velocity = shooter_velocity;
-            shooter_velocity = current_shooter_velocity;
 
+            // Get current shooter velocity
+            shooter_velocity = shooter.getSelectedSensorVelocity();
+
+            // If the shooter velocity went down by 50 then reverse transfer
             if (past_shooter_velocity != 0 && past_shooter_velocity - shooter_velocity > 50) {
-                // Ball went though!
                 reverseTransfer = true;
             }
 
-            //Reverse transfer
+            // Run transfer
             if (reverseTransfer) {
                 transferOut();
             } else {
@@ -267,6 +263,7 @@ public class VisionShooterTurret {
 
             intakeMotor.set(intakeSpeed);
         } else {
+            // Reset vars and stop transfer
             transferStop();
             shooter_velocity = 0;
             reverseTransfer = false;
