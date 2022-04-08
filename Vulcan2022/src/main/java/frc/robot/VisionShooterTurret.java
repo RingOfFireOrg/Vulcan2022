@@ -61,6 +61,14 @@ public class VisionShooterTurret {
     }
 
     public void teleopControl() {
+        // Update reverse transfer timer for auto shoot
+        if (reverseTransfer) {
+            reverseTransferTimer++;
+            if (reverseTransferTimer >= second * 0.75) {
+                reverseTransfer = false;
+            }
+        }
+
         // Teleoperated manipulator controls
         if (Controllers.get().mGamepadRightBumper()) {
             // Turn turret to target and shoot
@@ -127,14 +135,7 @@ public class VisionShooterTurret {
             shooterSpeed = lowShooterSpeed;
         }
 
-        // Update reverse transfer timer for auto shoot
-        if (reverseTransfer) {
-            reverseTransferTimer++;
-            if (reverseTransferTimer >= second * 0.75) {
-                reverseTransfer = false;
-            }
-        }
-
+        SmartDashboard.putNumber("Shooter Velocity", shooter.getSelectedSensorVelocity());
         if (Controllers.get().mGamepadLeftBumper() == true) {
             // Auto low shooter
             shooterSpeed = lowShooterSpeed;
@@ -145,20 +146,19 @@ public class VisionShooterTurret {
                 double current_shooter_velocity = shooter.getSelectedSensorVelocity();
 
                 double past_shooter_velocity = shooter_velocity;
-                shooter_velocity = Math.max(shooter_velocity, current_shooter_velocity);
+                shooter_velocity = current_shooter_velocity;
 
-                if (past_shooter_velocity != 0 && Math.abs(shooter_velocity - past_shooter_velocity) > 100) {
+                if (past_shooter_velocity != 0 && past_shooter_velocity - shooter_velocity > 50) {
                     // Ball went though!
                     reverseTransfer = true;
                 }
 
+                //Run transfer
                 if (reverseTransfer) {
                     transferOut();
                 } else {
                     transferIn();
                 }
-
-                SmartDashboard.putNumber("Shooter Velocity", shooter_velocity);
 
                 intakeMotor.set(intakeSpeed);
             } else {
@@ -242,15 +242,34 @@ public class VisionShooterTurret {
         double shooter_speed = highShooterSpeed + shooter_speed_adjust;
 
         // Set shooter motor to shooter speed
-        shooter.set(ControlMode.PercentOutput, shooter_speed);
+        shooter.set(ControlMode.PercentOutput, highShooterSpeed/*shooter_speed*/);
         shooter_running_time++;
 
         // Run transfer if the shooter has ran for long enough
         if (shooter_running_time > startTransferDelay) {
-            transferIn();
+            // Get shooter velocity
+            double current_shooter_velocity = shooter.getSelectedSensorVelocity();
+
+            double past_shooter_velocity = shooter_velocity;
+            shooter_velocity = current_shooter_velocity;
+
+            if (past_shooter_velocity != 0 && past_shooter_velocity - shooter_velocity > 50) {
+                // Ball went though!
+                reverseTransfer = true;
+            }
+
+            //Reverse transfer
+            if (reverseTransfer) {
+                transferOut();
+            } else {
+                transferIn();
+            }
+
             intakeMotor.set(intakeSpeed);
         } else {
             transferStop();
+            shooter_velocity = 0;
+            reverseTransfer = false;
         }
     }
 
