@@ -45,8 +45,8 @@ public class RobotMap {
 	public static final int MANIPULATOR_START_BUTTON = 8;
 
 	//Gamepad Axes
-	//public static final int MANIPULATOR_RIGHT_TRIGGER = 3;
-	//public static final int MANIPULATOR_LEFT_TRIGGER = 2;
+	public static final int MANIPULATOR_RIGHT_TRIGGER = 3;
+	public static final int MANIPULATOR_LEFT_TRIGGER = 2;
 	public static final int MANIPULATOR_LEFT_JOYSTICK_Y = 1;
 	public static final int MANIPULATOR_RIGHT_JOYSTICK_Y = 3;
 

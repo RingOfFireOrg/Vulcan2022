@@ -1,18 +1,12 @@
 package frc.robot; 
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
- 
-import javax.swing.TransferHandler.TransferSupport;
-
 import com.revrobotics.RelativeEncoder;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 
@@ -29,10 +23,14 @@ public class Container {
     public CANSparkMax frontLeftMotor;
     public CANSparkMax backLeftMotor;
     public VictorSP intakeMotor;
-    public VictorSP transferMotor1;
-    public VictorSP transferMotor2;
+    public VictorSP intakeExtendingMotor;
+    public CANSparkMax transferMotor1;
+    public CANSparkMax transferMotor2;
     public TalonFX shooter;
     public CANSparkMax turretMotor;
+    public DigitalInput rightLimitSwitch;
+    public DigitalInput leftLimitSwitch;
+    public RelativeEncoder turretEncoder;
 
     public AHRS ahrs;
 
@@ -41,8 +39,9 @@ public class Container {
     private Container() {
         climberRight = new CANSparkMax(7, MotorType.kBrushless);
         climberLeft = new CANSparkMax(8, MotorType.kBrushless);
-        winchMotor = new VictorSP(3);
-        winchMotorTwo = new VictorSP(0);
+        
+        winchMotor = new VictorSP(7);
+        winchMotorTwo = new VictorSP(8);
         
         frontLeftMotor = new CANSparkMax(RobotMap.DT_LEFT_FORWARD, MotorType.kBrushless);
         frontLeftMotor.setInverted(true);
@@ -56,21 +55,26 @@ public class Container {
         backLeftMotor = new CANSparkMax(RobotMap.DT_LEFT_BACK, MotorType.kBrushless);
         backLeftMotor.setInverted(true);
         
-        intakeMotor = new VictorSP(9);
+        intakeMotor = new VictorSP(6);
+        intakeExtendingMotor = new VictorSP(5);
 
         leftEncoder = frontLeftMotor.getEncoder();
         rightEncoder = frontRightMotor.getEncoder();
 
-        transferMotor1 = new VictorSP(8);
-        transferMotor2 = new VictorSP(7);
+        transferMotor1 = new CANSparkMax(11, MotorType.kBrushless);
+        transferMotor2 = new CANSparkMax(12, MotorType.kBrushless);
 
         shooter = new TalonFX(6);
 
         turretMotor = new CANSparkMax(RobotMap.TURRET_SPINNER, MotorType.kBrushless);
+        turretEncoder = turretMotor.getEncoder();
+
+        rightLimitSwitch = new DigitalInput(1);
+        leftLimitSwitch = new DigitalInput(2);
 
         ahrs = new AHRS(SerialPort.Port.kUSB);
         ahrs.reset();
-    } //nice
+    }
 
     public double getLeftInches() {
         return leftEncoder.getPosition() / RobotMap.DRIVEBASE_GEAR_RATIO * Math.PI * RobotMap.DRIVE_WHEEL_DIAMETER_IN;
@@ -81,12 +85,9 @@ public class Container {
     }
 
     public static Container get() {
-        if (theTrueContainer != null) {
-            return theTrueContainer;
-        }                   
-        else {
-            theTrueContainer = new Container();
-            return theTrueContainer;
-        }
+        if (theTrueContainer != null) return theTrueContainer;
+
+        theTrueContainer = new Container();
+        return theTrueContainer;
     }
 }
