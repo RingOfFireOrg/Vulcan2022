@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -13,6 +16,8 @@ public class Autonomous {
     private MotorControllerGroup leftMotors, rightMotors; 
     public TalonFX shooter;
     private AHRS ahrs;
+    CANSparkMax turret;
+    RelativeEncoder turretEncoder;
 
     private double driveOffset = 3;
     private double turnOffset = 12;
@@ -23,6 +28,11 @@ public class Autonomous {
     private double rightEncoderOffset = 0;
     private double leftPower = 0.4, rightPower = leftPower;
     private final int visionrange = 2;
+    private double shooter_velocity = 0;
+    public boolean reverseTransfer = false;
+    public double reverseTransferTimer = 0;
+    private final double turretEncoderRange = 12.5;
+    private boolean dontReverseTransfer = true;
     
     private int autonomousStep = -1;
     private String autoType = "smartauto";
@@ -42,6 +52,9 @@ public class Autonomous {
 
         shooter = Container.get().shooter;
         ahrs = Container.get().ahrs;
+
+        turret = Container.get().turretMotor;
+        turretEncoder = Container.get().turretEncoder;
     }
     
     public double getLeftEncoderDistance() {
@@ -123,7 +136,7 @@ public class Autonomous {
     }
 
     public void shootHigh() {
-        shooter.set(ControlMode.PercentOutput, .59);
+        shooter.set(ControlMode.PercentOutput, .57);
     }
 
     public void shooterStop() {
@@ -170,46 +183,54 @@ public class Autonomous {
         }
     }
 
-    public double[] updateVisionVals() {
+    public double[] getVisionVals() {
         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-        NetworkTableEntry tx = table.getEntry("tx");
-        NetworkTableEntry ty = table.getEntry("ty");
-        NetworkTableEntry ta = table.getEntry("ta");
-        NetworkTableEntry tv = table.getEntry("tv");
-
-        //read values
-        double x = tx.getDouble(0.0);
-        double y = ty.getDouble(0.0);
-        double area = ta.getDouble(0.0);
-        double v = tv.getDouble(0.0);
+        double tx = table.getEntry("tx").getDouble(0.0);
+        double ty = table.getEntry("ty").getDouble(0.0);
         
-        //post to smart dashboard
-        SmartDashboard.putNumber("LimelightX", x);
-        SmartDashboard.putNumber("LimelightY", y);
-        SmartDashboard.putNumber("LimelightArea", area);
-        SmartDashboard.putNumber("LimelightTarget", v);
-
-        double[] arr = {x, y, area, v};
+        double[] arr = {tx, ty};
         return arr;
     }
 
-    public void aimToTarget() {
-        double[] visionVals = updateVisionVals();
+    public void turretToTarget() {
+        // Read vision values
+        double[] visionVals = getVisionVals();
 
-        // visionVals 0 is the X distance from the center of camera to target
-        // visionVals 1 is the Y distance from the center of camera to target
-        // visionVals 2 is the distance from camera to target (?)
-        // visionVals 3 checks if there is a target in view
+        // Get horizontal Offset From Crosshair To Target (-29.8 to 29.8deg)
+        double tx = visionVals[0];
 
-        if (visionVals[0] < -visionrange) turnLeftSlow();
-        else if (visionVals[0] > visionrange) turnRightSlow();
-        else driveStop();
+        // Turret speed
+        double turret_speed = 0;
+
+        if (tx < -visionrange)
+            turret_speed = 0.1;
+        if (tx > visionrange)
+            turret_speed = -0.1;
+
+        // Clamp speed w/ encoder
+        if (turretEncoder.getPosition() > turretEncoderRange)
+            turret_speed = Math.min(turret_speed, 0); // Only negative speeds
+
+        if (turretEncoder.getPosition() < -turretEncoderRange)
+            turret_speed = Math.max(turret_speed, 0); // Only postive speeds
+
+        // Stop turret if in target is in range
+        if (Math.abs(tx) < visionrange)
+            turret_speed = 0;
+
+        // Set turret motor to turret speed
+        turret.set(turret_speed);
+    }
+
+    public void turretStop() {
+        turret.set(0);
     }
 
     public void reset(){
         driveStop();
         resetEncoders();
         shooterStop();
+        turretStop();
         intakeStop();
         Container.get().intakeExtendingMotor.set(0);
         timer = 0;
@@ -221,12 +242,12 @@ public class Autonomous {
             switch (autonomousStep) {
                 case -1: {
                     reset();
-                    autonomousStep++;
+                    autonomousStep = 1;
                     break;
                 }
                 case 0: {
                     //Vision
-                    if (timer < second * 5.5) {
+                    if (timer < second * 5) {
                         Container.get().intakeExtendingMotor.set(1);
                         timer++;
                     } else {
@@ -236,23 +257,29 @@ public class Autonomous {
                     break;
                 }
                 case 1: {
+                    // if (timer < second * 1) {
+                    //     Container.get().intakeExtendingMotor.set(1);
+                    //     timer++;
+                    // }
                     intakeIn();
                     drive("forward", FEET * 8.34);
                     break; 
                 }
                 case 2: {
                     turn("right", 180);
+                    intakeIn();
                     break;
                 }
                 case 3: {
                     intakeIn();
+                    shootHigh();
                     drive("forward", FEET * 5.51/*14.51*/);
                     break; 
                 }
                 case 4: {
                     //Vision
-                    if (timer < second * 4.5) {
-                        //aimToTarget();
+                    if (timer < second * 2.75) {
+                        turretToTarget();
                         shootHigh();
                         timer++;
                     } else {
@@ -262,43 +289,90 @@ public class Autonomous {
                     break;
                 }
                 case 5: {
-                    if (timer < second * 1) {
-                        transferIn();
-                        shootHigh();
-                        timer++;
-                    } else {
-                        autonomousStep++;
-                        reset();
+                    shootHigh();
+                    intakeIn();
+                    turretToTarget();
+
+                    if (reverseTransfer) {
+                        reverseTransferTimer++;
+            
+                        if (reverseTransferTimer >= second * 0.75) {
+                            reverseTransfer = false;
+                        }
                     }
-                    break;
-                }
-                
-                case 6: {
-                    if (timer < second * 0.5) {
+
+                    // Save old shooter velocity
+                    double past_shooter_velocity = shooter_velocity;
+
+                    // Get current shooter velocity
+                    shooter_velocity = shooter.getSelectedSensorVelocity();
+
+                    // If the shooter velocity went down by 50 then reverse transfer
+                    if (dontReverseTransfer == true && past_shooter_velocity - shooter_velocity > 50) {
+                        reverseTransfer = true;
+                        dontReverseTransfer = false;
+                    }
+
+                    // Run transfer
+                    if (reverseTransfer) {
                         transferOut();
-                        shootHigh();
-                        timer++;
                     } else {
-                        autonomousStep++;
-                        reset();
-                    }
-                    break;
-                }
-                case 7: {
-                    if (timer < second * 4.5) {
                         transferIn();
-                        shootHigh();
+                    }
+
+                    if (timer < second * 6) {
                         timer++;
                     } else {
                         autonomousStep++;
                         reset();
                     }
+
                     break;
                 }
-                case 8: {
+                case 6: {
                     shooterStop();
+                    transferStop();
+                    intakeStop();
                     break;
                 }
+                // case 5: {
+                //     if (timer < second * 1) {
+                //         transferIn();
+                //         shootHigh();
+                //         timer++;
+                //     } else {
+                //         autonomousStep++;
+                //         reset();
+                //     }
+                //     break;
+                // }
+                
+                // case 6: {
+                //     if (timer < second * 0.5) {
+                //         transferOut();
+                //         shootHigh();
+                //         timer++;
+                //     } else {
+                //         autonomousStep++;
+                //         reset();
+                //     }
+                //     break;
+                // }
+                // case 7: {
+                //     if (timer < second * 4.5) {
+                //         transferIn();
+                //         shootHigh();
+                //         timer++;
+                //     } else {
+                //         autonomousStep++;
+                //         reset();
+                //     }
+                //     break;
+                // }
+                // case 8: {
+                //     shooterStop();
+                //     break;
+                // }
             }
         }
     }
