@@ -3,9 +3,10 @@ package frc.robot;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Climber {
-      
+
     CANSparkMax climberLeft;
     CANSparkMax climberRight;
     VictorSP winchMotor;
@@ -19,12 +20,18 @@ public class Climber {
     }
 
     public void teleopControl() {
-        double speedRight = Controllers.get().cGamepadRightY();
+        double leftClimberAppliedVoltage = climberLeft.getBusVoltage() * climberLeft.getAppliedOutput();
+        double rightClimberAppliedVoltage = climberRight.getBusVoltage() * climberRight.getAppliedOutput();
+
+        SmartDashboard.putNumber("left climber applied voltage", leftClimberAppliedVoltage);
+        SmartDashboard.putNumber("right climber applied voltage", rightClimberAppliedVoltage);
+
+        double speedRight = Controllers.get().cGamepadLeftY();
         if (speedRight > -0.1 && speedRight < 0.1) {
             speedRight = 0;
         }
 
-        double speedLeft = Controllers.get().cGamepadLeftY();
+        double speedLeft = Controllers.get().cGamepadRightY();
         if (speedLeft > -0.1 && speedLeft < 0.1) {
             speedLeft = 0;
         }
@@ -38,16 +45,16 @@ public class Climber {
             speedRight = 1;
         }
 
-        climberLeft.set(-speedLeft);
+        climberLeft.set(speedLeft);
         climberRight.set(speedRight);
 
         double winchSpeed = 0;
         if (Controllers.get().cGamepadA()) {
             winchSpeed = 1;
-        } else if (Controllers.get().cGamepadB()){
+        } else if (Controllers.get().cGamepadB()) {
             winchSpeed = -1;
         }
-        
+
         winchMotor.set(winchSpeed);
 
         double winch2Speed = 0;

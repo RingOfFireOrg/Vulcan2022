@@ -3,6 +3,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveTrain {
 
@@ -30,5 +31,9 @@ public class DriveTrain {
 
         rightMotors.set(rightInputSpeed * driveCoefficient);
         leftMotors.set(leftInputSpeed * driveCoefficient);
+
+        SmartDashboard.putNumber("Left Encoder", Container.get().leftEncoder.getPosition());
+        SmartDashboard.putNumber("Left Encoder", Container.get().leftEncoder.getVelocity());
+        SmartDashboard.putNumber("Left Joystick", Controllers.get().dGamepadLeftY());
     }
 }
