@@ -180,9 +180,9 @@ public class VisionShooterTurret {
         double turret_speed = 0;
 
         if (tx < -visionrange)
-            turret_speed = 0.1;
-        if (tx > visionrange)
             turret_speed = -0.1;
+        if (tx > visionrange)
+            turret_speed = 0.1;
 
         // Clamp speed w/ encoder
         if (turretEncoder.getPosition() > turretEncoderRange)
@@ -214,9 +214,9 @@ public class VisionShooterTurret {
         double turret_speed = 0;
 
         if (tx < -visionrange)
-            turret_speed = 0.1;
-        if (tx > visionrange)
             turret_speed = -0.1;
+        if (tx > visionrange)
+            turret_speed = 0.1;
 
         // Clamp turret speed w/ encoder
         if (turretEncoder.getPosition() > turretEncoderRange)

@@ -136,7 +136,7 @@ public class Autonomous {
     }
 
     public void shootHigh() {
-        shooter.set(ControlMode.PercentOutput, .57);
+        shooter.set(ControlMode.PercentOutput, .56);
     }
 
     public void shooterStop() {
@@ -232,7 +232,7 @@ public class Autonomous {
         shooterStop();
         turretStop();
         intakeStop();
-        Container.get().intakeExtendingMotor.set(0);
+        //Container.get().intakeExtendingMotor.set(0);
         timer = 0;
     }
 
@@ -248,7 +248,7 @@ public class Autonomous {
                 case 0: {
                     //Vision
                     if (timer < second * 5) {
-                        Container.get().intakeExtendingMotor.set(1);
+                        //Container.get().intakeExtendingMotor.set(1);
                         timer++;
                     } else {
                         autonomousStep++;
@@ -257,7 +257,7 @@ public class Autonomous {
                     break;
                 }
                 case 1: {
-                    // if (timer < second * 1) {
+                    // if (timer < second * 1.75) {
                     //     Container.get().intakeExtendingMotor.set(1);
                     //     timer++;
                     // }
@@ -268,6 +268,7 @@ public class Autonomous {
                 case 2: {
                     turn("right", 180);
                     intakeIn();
+                    shootHigh();
                     break;
                 }
                 case 3: {
@@ -278,7 +279,7 @@ public class Autonomous {
                 }
                 case 4: {
                     //Vision
-                    if (timer < second * 2.75) {
+                    if (timer < second * 1.5) {
                         turretToTarget();
                         shootHigh();
                         timer++;
