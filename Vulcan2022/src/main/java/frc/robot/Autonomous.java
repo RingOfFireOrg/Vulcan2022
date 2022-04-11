@@ -57,6 +57,7 @@ public class Autonomous {
         turretEncoder = Container.get().turretEncoder;
     }
     
+    //encoder distances
     public double getLeftEncoderDistance() {
         return -(Container.get().getLeftInches() - leftEncoderOffset);
     }
