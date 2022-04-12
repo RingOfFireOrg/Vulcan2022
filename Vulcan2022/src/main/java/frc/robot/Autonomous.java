@@ -204,9 +204,9 @@ public class Autonomous {
         double turret_speed = 0;
 
         if (tx < -visionrange)
-            turret_speed = 0.1;
-        if (tx > visionrange)
             turret_speed = -0.1;
+        if (tx > visionrange)
+            turret_speed = 0.1;
 
         // Clamp speed w/ encoder
         if (turretEncoder.getPosition() > turretEncoderRange)
@@ -230,10 +230,9 @@ public class Autonomous {
     public void reset(){
         driveStop();
         resetEncoders();
-        shooterStop();
         turretStop();
         intakeStop();
-        //Container.get().intakeExtendingMotor.set(0);
+        Container.get().intakeExtendingMotor.set(0);
         timer = 0;
     }
 
@@ -241,15 +240,16 @@ public class Autonomous {
         SmartDashboard.putNumber("Absolute Direction", getAbsoluteDirection());
         if (autoType == "smartauto") {
             switch (autonomousStep) {
+                //Shoot two balls into high goal
                 case -1: {
                     reset();
-                    autonomousStep = 1;
+                    autonomousStep++;
                     break;
                 }
                 case 0: {
                     //Vision
-                    if (timer < second * 5) {
-                        //Container.get().intakeExtendingMotor.set(1);
+                    if (timer < second * 1.5) {
+                        Container.get().intakeExtendingMotor.set(1);
                         timer++;
                     } else {
                         autonomousStep++;
@@ -258,10 +258,10 @@ public class Autonomous {
                     break;
                 }
                 case 1: {
-                    // if (timer < second * 1.75) {
-                    //     Container.get().intakeExtendingMotor.set(1);
-                    //     timer++;
-                    // }
+                    if (timer < second * 1) {
+                        Container.get().intakeExtendingMotor.set(1);
+                        timer++;
+                    }
                     intakeIn();
                     drive("forward", FEET * 8.34);
                     break; 
@@ -337,44 +337,108 @@ public class Autonomous {
                     intakeStop();
                     break;
                 }
-                // case 5: {
-                //     if (timer < second * 1) {
-                //         transferIn();
-                //         shootHigh();
-                //         timer++;
-                //     } else {
-                //         autonomousStep++;
-                //         reset();
-                //     }
-                //     break;
-                // }
-                
-                // case 6: {
-                //     if (timer < second * 0.5) {
-                //         transferOut();
-                //         shootHigh();
-                //         timer++;
-                //     } else {
-                //         autonomousStep++;
-                //         reset();
-                //     }
-                //     break;
-                // }
-                // case 7: {
-                //     if (timer < second * 4.5) {
-                //         transferIn();
-                //         shootHigh();
-                //         timer++;
-                //     } else {
-                //         autonomousStep++;
-                //         reset();
-                //     }
-                //     break;
-                // }
-                // case 8: {
-                //     shooterStop();
-                //     break;
-                // }
+            }
+        } else if (autoType == "evilauto") {
+            //Shoots one preloaded ball into high and intakes an opposing color ball
+            switch (autonomousStep) {
+                case -1: {
+                    reset();
+                    autonomousStep++;
+                    break;
+                }
+                case 0: {
+                    //Vision
+                    if (timer < second * 1.5) {
+                        Container.get().intakeExtendingMotor.set(1);
+                        timer++;
+                    } else {
+                        autonomousStep++;
+                        reset();
+                    }
+                    break;
+                }
+                case 1: {
+                    if (timer < second * 1) {
+                        Container.get().intakeExtendingMotor.set(1);
+                        timer++;
+                    }
+                    intakeIn();
+                    drive("forward", FEET * 8.34);
+                    break; 
+                }
+                case 2: {
+                    turn("right", 180);
+                    intakeIn();
+                    shootHigh();
+                    break;
+                }
+                case 3: {
+                    intakeIn();
+                    shootHigh();
+                    drive("forward", FEET * 5.51/*14.51*/);
+                    break; 
+                }
+                case 4: {
+                    //Vision
+                    if (timer < second * 1) {
+                        turretToTarget();
+                        shootHigh();
+                        timer++;
+                    } else {
+                        autonomousStep++;
+                        reset();
+                    }
+                    break;
+                }
+                case 5: {
+                    shootHigh();
+                    intakeIn();
+                    turretToTarget();
+
+                    if (reverseTransfer) {
+                        reverseTransferTimer++;
+            
+                        if (reverseTransferTimer >= second * 0.75) {
+                            reverseTransfer = false;
+                            autonomousStep++;
+                            break;
+                        }
+                    }
+
+                    // Save old shooter velocity
+                    double past_shooter_velocity = shooter_velocity;
+
+                    // Get current shooter velocity
+                    shooter_velocity = shooter.getSelectedSensorVelocity();
+
+                    // If the shooter velocity went down by 50 then reverse transfer
+                    if (dontReverseTransfer == true && past_shooter_velocity - shooter_velocity > 50) {
+                        reverseTransfer = true;
+                        dontReverseTransfer = false;
+                    }
+
+                    // Run transfer
+                    if (reverseTransfer) {
+                        transferOut();
+                    } else {
+                        transferIn();
+                    }
+
+                    if (timer < second * 6) {
+                        timer++;
+                    } else {
+                        autonomousStep++;
+                        reset();
+                    }
+
+                    break;
+                }
+                case 6: {
+                    shooterStop();
+                    transferStop();
+                    intakeStop();
+                    break;
+                }
             }
         }
     }
