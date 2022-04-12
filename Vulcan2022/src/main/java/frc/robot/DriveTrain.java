@@ -10,6 +10,10 @@ public class DriveTrain {
     MotorController leftMotors, rightMotors;
     LinearServo linear;
     private double driveCoefficient;
+    private double leftDriveMultiplier = 1;
+    private double rightDriveMultiplier = 1;
+    private boolean backBtnPressed = false;
+    private boolean startBtnPressed = false;
 
     public DriveTrain() {
         rightMotors = new MotorControllerGroup(Container.get().frontRightMotor, Container.get().backRightMotor);
@@ -29,11 +33,23 @@ public class DriveTrain {
             driveCoefficient = .35;
         }
 
-        rightMotors.set(rightInputSpeed * driveCoefficient);
-        leftMotors.set(leftInputSpeed * driveCoefficient);
+        if (Controllers.get().dGamepadBack() && backBtnPressed == false) {
+            backBtnPressed = true;
+            leftDriveMultiplier *= -1;
+        } else if (!Controllers.get().dGamepadBack()){
+            backBtnPressed = false;
+        }
 
-        SmartDashboard.putNumber("Left Encoder", Container.get().leftEncoder.getPosition());
-        SmartDashboard.putNumber("Left Encoder", Container.get().leftEncoder.getVelocity());
-        SmartDashboard.putNumber("Left Joystick", Controllers.get().dGamepadLeftY());
+        if (Controllers.get().dGamepadStart() && startBtnPressed == false) {
+            startBtnPressed = true;
+            rightDriveMultiplier *= -1;
+        } else if (!Controllers.get().dGamepadStart()){
+            startBtnPressed = false;
+        }
+
+        SmartDashboard.putNumber("Right Drive Mult", rightDriveMultiplier);
+
+        rightMotors.set(rightDriveMultiplier * rightInputSpeed * driveCoefficient);
+        leftMotors.set(leftDriveMultiplier * leftInputSpeed * driveCoefficient);
     }
 }

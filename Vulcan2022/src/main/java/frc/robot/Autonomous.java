@@ -203,6 +203,7 @@ public class Autonomous {
         // Turret speed
         double turret_speed = 0;
 
+        // Set speed based on limelight tx
         if (tx < -visionrange)
             turret_speed = -0.1;
         if (tx > visionrange)
