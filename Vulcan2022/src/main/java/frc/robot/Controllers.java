@@ -42,6 +42,12 @@ public class Controllers {
     public double mGamepadRightY() {
         return manipulatorController.getRawAxis(5);
     }
+    public boolean dGamepadBack() {
+        return driverController.getRawButton(7);
+    }
+    public boolean dGamepadStart() {
+        return driverController.getRawButton(8);
+    }
 
     //Manipulator controller functions
     public boolean mGamepadA() {
