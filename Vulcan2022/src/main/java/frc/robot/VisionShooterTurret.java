@@ -210,8 +210,8 @@ public class VisionShooterTurret {
 
         // Encoder Limit Cushion
         double headingFromLimit = turretEncoderRange - Math.abs(turretEncoder.getPosition());
-        if (Math.abs(headingFromLimit) < 4) {
-            double divider = (4 - Math.abs(headingFromLimit));
+        if (Math.abs(headingFromLimit) < 3) {
+            double divider = (3 - Math.abs(headingFromLimit));
             divider = Math.max(divider, 1);
             turret_speed = turret_speed / divider;
         }
@@ -256,8 +256,8 @@ public class VisionShooterTurret {
 
         // Encoder Limit Cushion
         double headingFromLimit = turretEncoderRange - Math.abs(turretEncoder.getPosition());
-        if (Math.abs(headingFromLimit) < 4) {
-            double divider = (4 - Math.abs(headingFromLimit));
+        if (Math.abs(headingFromLimit) < 3) {
+            double divider = (3 - Math.abs(headingFromLimit));
             divider = Math.max(divider, 1);
             turret_speed = turret_speed / divider;
         }
