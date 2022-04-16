@@ -24,7 +24,7 @@ public class VisionShooterTurret {
     RelativeEncoder turretEncoder;
 
     // Important Vision Vars
-    private final double visionrange = 1.5;
+    private final double visionrange = 0.75;
     private final double targetHeight = 14.3; // limelight target ty value
 
     // Shooter
@@ -78,16 +78,26 @@ public class VisionShooterTurret {
             // Enable manipulator shooter control
             shooterControl();
 
-            // Rotate turret back to facing forward
-            if (turretEncoder.getPosition() < -turretErrorRange)
-                turret.set(0.05);
-            else if (turretEncoder.getPosition() > turretErrorRange)
-                turret.set(-0.05);
-            else
-                turret.set(0);
-
             // Reset shooter timer for auto shooting with vision
             shooter_running_time = 0;
+
+            // Rotate turret back to facing forward
+            // -- Untested --
+            double turretHeadingError = -turretEncoder.getPosition();
+            double turretSpeed = turretHeadingError * 0.04;
+            if (Math.abs(turretSpeed) < 0.05) {
+                turretSpeed = 0;
+            }
+
+            turret.set(turretSpeed);
+
+            // -- Tested --
+            // if (turretEncoder.getPosition() < -turretErrorRange)
+            // turret.set(0.05);
+            // else if (turretEncoder.getPosition() > turretErrorRange)
+            // turret.set(-0.05);
+            // else
+            // turret.set(0);
         }
     }
 
@@ -101,11 +111,14 @@ public class VisionShooterTurret {
         // Vertical Offset From Crosshair To Target (-24.85 to 24.85deg)
         double y = table.getEntry("ty").getDouble(0.0);
 
+        // Valid target in vision (0 or 1)
+        double v = table.getEntry("ty").getDouble(0.0);
+
         // post to smart dashboard
         SmartDashboard.putNumber("LimelightX", x);
         SmartDashboard.putNumber("LimelightY", y);
 
-        double[] arr = { x, y };
+        double[] arr = { x, y, v };
         return arr;
     }
 
@@ -177,12 +190,16 @@ public class VisionShooterTurret {
         double tx = visionVals[0];
 
         // Turret speed
-        double turret_speed = 0;
+        double turret_speed = tx * 0.055;
 
-        if (tx < -visionrange)
-            turret_speed = -0.1;
-        if (tx > visionrange)
-            turret_speed = 0.1;
+        if (Math.abs(turret_speed) < 0.05) {
+            turret_speed = 0;
+        }
+
+        // if (tx < -visionrange)
+        // turret_speed = 0.1;
+        // if (tx > visionrange)
+        // turret_speed = -0.1;
 
         // Clamp speed w/ encoder
         if (turretEncoder.getPosition() > turretEncoderRange)
@@ -190,6 +207,14 @@ public class VisionShooterTurret {
 
         if (turretEncoder.getPosition() < -turretEncoderRange)
             turret_speed = Math.max(turret_speed, 0); // Only postive speeds
+
+        // Encoder Limit Cushion
+        double headingFromLimit = turretEncoderRange - Math.abs(turretEncoder.getPosition());
+        if (Math.abs(headingFromLimit) < 4) {
+            double divider = (4 - Math.abs(headingFromLimit));
+            divider = Math.max(divider, 1);
+            turret_speed = turret_speed / divider;
+        }
 
         // Stop turret if in target is in range
         if (Math.abs(tx) < visionrange)
@@ -211,12 +236,16 @@ public class VisionShooterTurret {
         double ty = visionVals[1];
 
         // Turret speed
-        double turret_speed = 0;
+        double turret_speed = tx * 0.055;
 
-        if (tx < -visionrange)
-            turret_speed = -0.1;
-        if (tx > visionrange)
-            turret_speed = 0.1;
+        if (Math.abs(turret_speed) < 0.05) {
+            turret_speed = 0;
+        }
+
+        // if (tx < -visionrange)
+        // turret_speed = 0.1;
+        // if (tx > visionrange)
+        // turret_speed = -0.1;
 
         // Clamp turret speed w/ encoder
         if (turretEncoder.getPosition() > turretEncoderRange)
@@ -224,6 +253,14 @@ public class VisionShooterTurret {
 
         if (turretEncoder.getPosition() < -turretEncoderRange)
             turret_speed = Math.max(turret_speed, 0); // Only postive speeds
+
+        // Encoder Limit Cushion
+        double headingFromLimit = turretEncoderRange - Math.abs(turretEncoder.getPosition());
+        if (Math.abs(headingFromLimit) < 4) {
+            double divider = (4 - Math.abs(headingFromLimit));
+            divider = Math.max(divider, 1);
+            turret_speed = turret_speed / divider;
+        }
 
         // Stop turret if in range
         if (Math.abs(tx) < visionrange)
@@ -233,7 +270,13 @@ public class VisionShooterTurret {
         turret.set(turret_speed);
 
         // Shooter - Calculate speed
-        double shooter_speed = highShooterSpeed + ((ty - targetHeight) / 250);
+        double shooterSpeed = highShooterSpeed;
+        double distanceSensitivity = 0.004;
+
+        if (visionVals[2] != 0) {
+            // If there is a target in vision, adjust speed
+            shooterSpeed += (ty - targetHeight) * distanceSensitivity;
+        }
 
         // Set shooter motor to shooter speed
         shooter.set(ControlMode.PercentOutput, highShooterSpeed/* shooter_speed */);
