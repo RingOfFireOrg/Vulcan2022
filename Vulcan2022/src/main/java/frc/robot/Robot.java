@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
+import edu.wpi.first.wpilibj.Compressor;
+
 
 
 /**
@@ -22,14 +24,19 @@ public class Robot extends TimedRobot {
 
   protected DriveTrain driveTrain;
   protected Autonomous autonomous;
+  protected Pneumatics pneumatics;
+
   int counter = 0;
   
   @Override
   public void robotInit() {
     driveTrain = new DriveTrain();
-    autonomous = new Autonomous();
-
-    driveTrain.teleopInit();
+    //autonomous = new Autonomous();
+ 
+    //driveTrain.teleopInit();
+    pneumatics = new Pneumatics();
+    
+    
   }
 
   @Override
@@ -39,15 +46,19 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    autonomous.autonomousInit();
+    //autonomous.autonomousInit();
   }
 
-  
+  @Override
+  public void teleopInit() {
+    pneumatics.teleopInit();
+  }
+
   @Override
   public void teleopPeriodic() {
-    driveTrain.teleopControl();
+    //driveTrain.teleopControl();
     
-    double speedRight= ControlSystems.getInstance().rightstick.getY();
+    /*double speedRight= ControlSystems.getInstance().rightstick.getY();
     if (speedRight < 0.1 && speedRight > 0.1) {
       speedRight = 0;
     }
@@ -66,7 +77,8 @@ public class Robot extends TimedRobot {
       Container.getInstance().winchMotor.set(0);
     }
 
-    Container.getInstance().winchMotorTwo.set(ControlSystems.getInstance().mGamepadLeftY());
+    Container.getInstance().winchMotorTwo.set(ControlSystems.getInstance().mGamepadLeftY());*/
+    pneumatics.teleopControl();
     
     //Container.getInstance().frontLeftMotor.set(speed);
   }

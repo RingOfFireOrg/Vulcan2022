@@ -13,9 +13,9 @@ import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
-public class DriveTrain extends TeleopModule {
+public class DriveTrain {
 
-    MotorController leftMotors, rightMotors;
+    /*MotorController leftMotors, rightMotors;
     private RelativeEncoder rightEncoder; // leftEncoder;
     LinearServo linear;
     LinearServo linear2;
@@ -70,5 +70,5 @@ if (ControlSystems.getInstance().mGamepadLB()){
 
     @Override
     public void teleopInit() { }
-    public void periodic() { }
+    public void periodic() { }*/
 }
