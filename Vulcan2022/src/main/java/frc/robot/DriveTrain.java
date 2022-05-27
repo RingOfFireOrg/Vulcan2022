@@ -23,9 +23,9 @@ public class DriveTrain {
         double leftInputSpeed = Controllers.get().dGamepadLeftY();
         double rightInputSpeed = Controllers.get().dGamepadRightY();
         if (Controllers.get().dGamepadA()) {
-            driveCoefficient = .75;
+            driveCoefficient = .4;
         } else if (Controllers.get().dGamepadB()) {
-            driveCoefficient = .35;
+            driveCoefficient = .2;
         }
 
         rightMotors.set(rightInputSpeed * driveCoefficient);
