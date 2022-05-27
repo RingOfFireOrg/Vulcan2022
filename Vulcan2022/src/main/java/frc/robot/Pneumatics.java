@@ -17,9 +17,9 @@ public class Pneumatics extends TeleopModule{
 
     @Override
     public void teleopControl() {
-        if(ControlSystems.getInstance().mGamepadA()) {
+        if(ControlSystems.getInstance().mGameCubeA()) {
             piston1.set(Value.kForward);
-        } else if (ControlSystems.getInstance().mGamepadB()) {
+        } else if (ControlSystems.getInstance().mGameCubeB()) {
             piston1.set(Value.kReverse);
         } else {
             piston1.set(Value.kOff);
