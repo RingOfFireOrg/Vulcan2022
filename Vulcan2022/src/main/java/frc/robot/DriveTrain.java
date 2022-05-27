@@ -14,7 +14,7 @@ public class DriveTrain {
         rightMotors = new MotorControllerGroup(Container.get().frontRightMotor, Container.get().backRightMotor);
         leftMotors = new MotorControllerGroup(Container.get().frontLeftMotor, Container.get().backLeftMotor);
         linear = new LinearServo(0, 50, 5);
-        driveCoefficient = .35;
+        driveCoefficient = .2;
     }
 
     public void teleopControl() {
@@ -23,9 +23,9 @@ public class DriveTrain {
         double leftInputSpeed = Controllers.get().dGamepadLeftY();
         double rightInputSpeed = Controllers.get().dGamepadRightY();
         if (Controllers.get().dGamepadA()) {
-            driveCoefficient = .75;
+            driveCoefficient = .4;
         } else if (Controllers.get().dGamepadB()) {
-            driveCoefficient = .35;
+            driveCoefficient = .2;
         }
 
         rightMotors.set(rightInputSpeed * driveCoefficient);
