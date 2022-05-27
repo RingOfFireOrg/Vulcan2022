@@ -29,7 +29,7 @@ public class VisionShooterTurret {
 
     // Shooter
     private final double lowShooterSpeed = 0.3;
-    private final double highShooterSpeed = 0.4;
+    private final double highShooterSpeed = 0.56;
     private final double second = 20;
     private double shooter_running_time = 0;
     private double shooter_velocity = 0;
