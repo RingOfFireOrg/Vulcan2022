@@ -30,6 +30,9 @@ public class Controllers {
     public boolean dGamepadB() {
         return driverController.getRawButton(2);
     }
+    public boolean dGamepadX() {
+        return driverController.getRawButton(3);
+    }
     public boolean dGamepadRightBumper() {
         return driverController.getRawButton(6);
     }
