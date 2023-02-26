@@ -37,8 +37,8 @@ public class Container {
     private static Container theTrueContainer;
 
     private Container() {
-        climberRight = new CANSparkMax(7, MotorType.kBrushless);
-        climberLeft = new CANSparkMax(8, MotorType.kBrushless);
+        /*climberRight = new CANSparkMax(7, MotorType.kBrushless);
+        climberLeft = new CANSparkMax(8, MotorType.kBrushless);*/
         
         winchMotor = new VictorSP(7);
         winchMotorTwo = new VictorSP(8);

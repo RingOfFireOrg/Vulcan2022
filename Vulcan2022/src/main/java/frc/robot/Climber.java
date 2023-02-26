@@ -12,14 +12,14 @@ public class Climber {
     VictorSP winchMotorTwo;
 
     public void teleopInit() {
-        climberLeft = Container.get().climberLeft;
-        climberRight = Container.get().climberRight;
+        //climberLeft = Container.get().climberLeft;
+        //climberRight = Container.get().climberRight;
         winchMotor = Container.get().winchMotor;
         winchMotorTwo = Container.get().winchMotorTwo;
     }
 
     public void teleopControl() {
-        double speedRight = Controllers.get().cGamepadRightY();
+        /*double speedRight = Controllers.get().cGamepadRightY();
         if (speedRight > -0.1 && speedRight < 0.1) {
             speedRight = 0;
         }
@@ -56,6 +56,6 @@ public class Climber {
         } else if (Controllers.get().cGamepadPov() == "down") {
             winch2Speed = -0.8;
         }
-        winchMotorTwo.set(winch2Speed);
+        winchMotorTwo.set(winch2Speed);*/
     }
 }

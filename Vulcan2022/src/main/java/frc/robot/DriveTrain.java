@@ -23,11 +23,11 @@ public class DriveTrain {
         double leftInputSpeed = Controllers.get().dGamepadLeftY();
         double rightInputSpeed = Controllers.get().dGamepadRightY();
         if (Controllers.get().dGamepadA()) {
-            driveCoefficient = .4;
+            driveCoefficient = .15;
         } else if (Controllers.get().dGamepadB()) {
             driveCoefficient = .2;
         } else if (Controllers.get().dGamepadX()) {
-            driveCoefficient = .8;
+            driveCoefficient = .15;
         }
 
 
