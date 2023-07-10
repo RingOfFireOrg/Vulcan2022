@@ -28,8 +28,8 @@ public class VisionShooterTurret {
     private final double targetHeight = 14.3; // limelight target ty value
 
     // Shooter
-    private final double lowShooterSpeed = 0.5;
-    private final double highShooterSpeed = 0.4;
+    private final double lowShooterSpeed = 0.35;
+    private final double highShooterSpeed = 0.45;
     private final double second = 20;
     private double shooter_running_time = 0;
     private double shooter_velocity = 0;
